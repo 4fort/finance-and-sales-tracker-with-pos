@@ -1,17 +1,25 @@
-import React from 'react'
+'use client'
+import { Dashboard } from '@/components/screens/Dashboard/Dashboard'
+import Image from 'next/image'
+
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CalendarDateRangePicker } from '@/components/Dashboard/date-range-picker'
+import { MainNav } from '@/components/Dashboard/main-nav'
+import { Overview } from '@/components/Dashboard/overview'
+import { RecentSales } from '@/components/Dashboard/recent-sales'
+import { Search } from '@/components/Dashboard/search'
+import { TeamSwitcher } from '@/components/Dashboard/team-switcher'
+import { UserNav } from '@/components/Dashboard/user-nav'
 
 const DashboardPage = () => {
-  return (
-    <div className="py-12">
-      <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div className="p-6 bg-white border-b border-gray-200">
-            {`You're logged in!`}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <Dashboard />
 }
-
 export default DashboardPage

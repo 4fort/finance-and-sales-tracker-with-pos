@@ -1,0 +1,139 @@
+/* LoginPage.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+.page-container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    grid-template-columns: 1fr 1fr;
+    min-height: 600px;
+  }
+
+  @media (min-width: 1280px) {
+    .page-container {
+      min-height: 800px;
+    }
+  }
+}
+
+.left-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+.form-brand {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.form-brand  h1 {
+font-size: large;
+font-weight: bold;
+font-family: 'Roboto',sans-serif;
+}
+.form-container {
+  width: 350px;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.form-header {
+  text-align: center;
+  display: grid;
+  gap: 0.5rem;
+}
+.form-label{
+  font-family: 'Roboto',sans-serif;
+  font-size: large ;
+  color: #6b7280; /* muted foreground color */
+}
+.form-title {
+  font-weight: bold;
+  font-size:  50px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.form-description {
+  color: #6b7280; /* muted foreground color */
+  font-size: large;
+  font-family: 'Roboto', sans-serif;
+}
+
+.form-body {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-footer {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.form-footer-link {
+  text-decoration: underline;
+}
+
+.right-column {
+  display: none;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-item {
+  margin-bottom: 1rem; /* Adds space between form items */
+  margin-top: 1rem;
+}
+
+
+.form-input {
+  width: 100%;
+  border-right:none;
+  border-left:none;
+  border-top: none;
+}
+
+.button {
+  margin-top: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .right-column {
+    display: block;
+    background-color: #f3f4f6; /* muted background */
+    position: relative;
+    width: 70vw;
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* filter: grayscale(100%) brightness(0.2); */
+  }
+  .video-caption {
+  position: absolute;
+  bottom: 20px; /* Position near the bottom of the video */
+  left: 50%;
+  transform: translateX(-50%);
+  color: white; /* White text for good contrast */
+  font-size: 40px;
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 70%;
+}
+}
