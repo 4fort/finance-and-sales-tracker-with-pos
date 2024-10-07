@@ -11,7 +11,7 @@ import { Testimonials } from '@/components/LandingPage/Testimonials'
 
 export function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen font-sans">
+    <div className="flex flex-col min-h-screen font-sans relative">
       <Header />
       <main className="flex-1">
         <Hero />

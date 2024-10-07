@@ -1,44 +1,38 @@
+import { MoveRight, PhoneCall } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
-import heroImage from '../../../public/hero-image.jpg'
-export function Hero() {
+import Image from 'next/image'
+
+export const Hero = () => {
   const router = useRouter()
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 px-4 md:px-6 ">
-      <div className="absolute inset-0 -z-20 w-full h-full">
-        <video
-          src={require('../../../public/hero-video-2.mp4')}
-          autoPlay
-          muted
-          loop
-          className="object-cover w-full h-full"
-        />
-      </div>
+    <div className="w-full overflow-hidden relative z-10">
       <div className="container mx-auto">
-        <div className="flex flex-col items-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-white">
+        <div className="flex min-h-[90vh] gap-8 py-20 lg:py-40 items-center justify-center flex-col">
+          <div className="flex gap-4 flex-col">
+            <h1 className="text-5xl md:text-7xl max-w-2xl tracking-tighter text-center font-bold text-slate-900 dark:text-white">
               Supercharge Your E-commerce Business
             </h1>
-            <p className="mx-auto max-w-[700px] text-white md:text-xl dark:text-white">
+            <p className="text-lg md:text-xl leading-relaxed tracking-tight text-slate-900 dark:text-white max-w-2xl text-center">
               Powerful admin tools to manage your online store, boost sales, and
               delight customers.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-row gap-3">
             <Button
               size="lg"
-              onClick={() => router.push('/login')}
-              className="bg-transparent border rounded-md">
-              Get Started
+              className="gap-4"
+              variant="outline"
+              onClick={() => router.push('/login')}>
+              Get Started <MoveRight className="w-4 h-4" />
             </Button>
-            <Button variant="secondary" size="lg">
-              Learn More
+            <Button size="lg" className="gap-4">
+              Learn More <PhoneCall className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
