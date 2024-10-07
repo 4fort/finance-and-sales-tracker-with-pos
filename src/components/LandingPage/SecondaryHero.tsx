@@ -2,11 +2,13 @@ import { Button } from '../ui/button'
 
 export function SecondaryHero() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6">
-      <div className="container mx-auto">
-        <div className="flex flex-col items-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+    <section
+      id="faq"
+      className="w-full min-h-[90vh] py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
+      <div className="w-[90%] md:w-[70%] flex flex-col space-y-12">
+        <div className="flex flex-col space-y-12 justify-center items-center">
+          <div className="space-y-4 flex flex-col justify-center items-center">
+            <h2 className="w-[70%] text-center text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Ready to Transform Your E-commerce Business?
             </h2>
             <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">

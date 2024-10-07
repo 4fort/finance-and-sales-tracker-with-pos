@@ -9,11 +9,25 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="w-full py-12 md:py-24 lg:py-32 px-4 md:px-6 bg-white">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12">
-          Frequently Asked Questions
-        </h2>
+      className="w-full min-h-[90vh] py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
+      <div className="w-[90%] md:w-[70%] flex flex-col space-y-12">
+        <div className="flex flex-col justify-center items-center">
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">
+            Frequently Asked Questions
+          </h2>
+          <p
+            className="
+            text-center
+            max-w-[600px]
+            mx-auto
+            mt-4
+            text-gray-700
+            dark:text-gray-300
+            md:text-xl
+          ">
+            Find answers to common queries about our platform and services.
+          </p>
+        </div>
         <Accordion
           type="single"
           collapsible
@@ -41,8 +55,8 @@ export function FAQ() {
             },
           ].map((item, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger>{item.question}</AccordionTrigger>
-              <AccordionContent>{item.answer}</AccordionContent>
+              <AccordionTrigger className='text-2xl'>{item.question}</AccordionTrigger>
+              <AccordionContent className='text-md'>{item.answer}</AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
