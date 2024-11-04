@@ -12,7 +12,7 @@ export function Pricing() {
   return (
     <section
       id="pricing"
-      className="w-full min-h-[90vh] py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
+      className="w-full min-h-[70vh] py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
       <div className="w-[90%] md:w-[70%] flex flex-col space-y-12">
         <div className="flex flex-col justify-center items-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">
@@ -65,7 +65,11 @@ export function Pricing() {
           ].map((plan, index) => (
             <Card
               key={index}
-              className="hover:scale-110 flex flex-col justify-between duration-200 hover:bg-gray-950 hover:text-white group">
+              className={`${
+                index === 1
+                  ? 'scale-110  bg-gray-900 text-white '
+                  : 'transform  hover:scale-105 transition-transform duration-300 hover:bg-gray-900 hover:text-white group'
+              }  `}>
               <div className="flex flex-col w-full">
                 <CardHeader>
                   <CardTitle className="text-3xl">{plan.name}</CardTitle>
@@ -86,7 +90,12 @@ export function Pricing() {
               </div>
 
               <CardFooter>
-                <Button className="w-full group-hover:bg-white group-hover:text-black">
+                <Button
+                  className={`w-full ${
+                    index === 1
+                      ? 'bg-white text-black hover:text-black hover:bg-white   '
+                      : 'group-hover:bg-white group-hover:text-black'
+                  } `}>
                   {index === 2 ? 'Contact Sales' : 'Get Started'}
                 </Button>
               </CardFooter>

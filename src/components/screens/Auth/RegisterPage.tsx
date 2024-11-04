@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/auth'
 import styles from '../Auth/registerPage.module.css'
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
+import { useRouter } from 'next/navigation'
 
 interface Values {
   name: string
@@ -18,6 +19,7 @@ export const description =
   "A login page with two columns. The first column has the login form with email and password. There's a Forgot your passwork link and a link to sign up if you do not have an account. The second column has a cover image."
 
 export function RegisterPage() {
+  const router = useRouter()
   const { register } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/dashboard',
@@ -53,7 +55,9 @@ export function RegisterPage() {
     <div className={styles['page-container']}>
       <div className={styles['left-column']}>
         <div className={styles['form-container']}>
-          <div className={styles['form-brand']}>
+          <div
+            className={styles['form-brand']}
+            onClick={() => router.push('/')}>
             <ShoppingCart className={styles['cart-icon']} />
             <h1>AdminCommerce</h1>
           </div>

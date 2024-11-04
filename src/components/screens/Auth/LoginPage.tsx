@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/auth'
 // import loginImage from '../../../../public/'
 import styles from '../Auth/loginPage.module.css'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().min(1, {
@@ -39,6 +40,7 @@ export const description =
   "A login page with two columns. The first column has the login form with email and password. There's a Forgot your passwork link and a link to sign up if you do not have an account. The second column has a cover image."
 
 export function LoginPage() {
+  const router = useRouter()
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -95,7 +97,9 @@ export function LoginPage() {
     <div className={styles['page-container']}>
       <div className={styles['left-column']}>
         <div className={styles['form-container']}>
-          <div className={styles['form-brand']}>
+          <div
+            className={styles['form-brand']}
+            onClick={() => router.push('/')}>
             <ShoppingCart className="h-10 w-10 mr-2 " />
             <h1>AdminCommerce</h1>
           </div>

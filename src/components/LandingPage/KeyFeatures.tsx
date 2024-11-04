@@ -5,7 +5,7 @@ export function KeyFeatures() {
   return (
     <section
       id="features"
-      className="w-full min-h-[90vh] py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
+      className="w-full min-h-[70vh] py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
       <div className="w-[90%] md:w-[70%] flex flex-col space-y-12">
         <div className="flex flex-col justify-center items-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">
@@ -35,7 +35,7 @@ export function KeyFeatures() {
           />
           <FeatureCard
             icon={
-              <ShoppingCart className="h-6 w-6 mb-2 text-primary group-hover:text-white" />
+              <ShoppingCart className="h-6 w-6 mb-2 text-primary text-white" />
             }
             title="Order Management"
             description="Efficiently process orders, manage returns, and track shipments in real-time."
@@ -61,13 +61,23 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <Card className="transform hover:scale-105 transition-transform duration-300 hover:bg-gray-900 hover:text-white group">
+    <Card
+      className={`${
+        title === 'Order Management'
+          ? 'scale-110  bg-gray-900 text-white '
+          : 'transform  hover:scale-105 transition-transform duration-300 hover:bg-gray-900 hover:text-white group'
+      }  `}>
       <CardHeader className="flex flex-col items-start text-start">
         {icon}
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-700 dark:text-gray-300 group-hover:text-gray-100">
+        <p
+          className={`${
+            title === 'Order Management'
+              ? 'text-white'
+              : 'text-gray-700 dark:text-gray-300 group-hover:text-gray-100 '
+          } `}>
           {description}
         </p>
       </CardContent>
