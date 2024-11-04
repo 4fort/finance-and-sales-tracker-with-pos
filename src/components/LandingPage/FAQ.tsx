@@ -9,7 +9,7 @@ export function FAQ() {
   return (
     <section
       id="faq"
-      className="w-full min-h-[90vh] py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
+      className="w-full min-h-[70vh] py-12 md:py-24 lg:py-32 bg-white dark:bg-gray-800 px-4 md:px-6 flex flex-row justify-center items-center">
       <div className="w-[90%] md:w-[70%] flex flex-col space-y-12">
         <div className="flex flex-col justify-center items-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center">
@@ -55,8 +55,12 @@ export function FAQ() {
             },
           ].map((item, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className='text-2xl'>{item.question}</AccordionTrigger>
-              <AccordionContent className='text-md'>{item.answer}</AccordionContent>
+              <AccordionTrigger className="text-2xl">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-lg">
+                {item.answer}
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
