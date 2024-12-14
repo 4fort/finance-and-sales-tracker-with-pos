@@ -1,4 +1,3 @@
-'use client'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -42,6 +41,7 @@ export const description =
 export function LoginPage() {
   const router = useRouter()
   // 1. Define your form.
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +52,7 @@ export function LoginPage() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<string>('')
 
-  const { login, user } = useAuth({
+  const { login } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/dashboard',
   })

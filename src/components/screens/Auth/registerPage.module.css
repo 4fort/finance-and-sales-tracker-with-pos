@@ -151,7 +151,7 @@ font-family: 'Roboto',sans-serif;
 .label {
   display: block;
   font-weight: 200;
-  margin-top: 2px;
+  margin-top: 10px;
   font-family: 'Roboto',sans-serif;
   color: #6b7280; /* muted foreground color */
 }
@@ -164,8 +164,8 @@ font-family: 'Roboto',sans-serif;
   border-right: none;
   box-shadow: none;
   border-radius: 0;
-  margin-top: 5px;
-  margin-bottom: 5px;
+
+
 }
 
 .input:focus {

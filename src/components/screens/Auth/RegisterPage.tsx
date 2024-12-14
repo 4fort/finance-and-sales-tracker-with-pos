@@ -82,7 +82,12 @@ export function RegisterPage() {
                   <label htmlFor="name" className={styles['label']}>
                     Name
                   </label>
-                  <Field id="name" name="name" className={styles['input']} />
+                  <Field
+                    id="name"
+                    name="name"
+                    placeholder="John Doe"
+                    className={styles['input']}
+                  />
                   <ErrorMessage
                     name="name"
                     component="span"
@@ -98,6 +103,7 @@ export function RegisterPage() {
                     id="email"
                     name="email"
                     type="email"
+                    placeholder="JohnDoe@email.com"
                     className={styles['input']}
                   />
                   <ErrorMessage
