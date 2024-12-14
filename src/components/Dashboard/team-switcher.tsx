@@ -42,41 +42,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useAuth } from '@/hooks/auth'
 
-const groups = [
-  {
-    label: 'Personal Account',
-    teams: [
-      {
-        label: 'Alicia Koch',
-        value: 'personal',
-      },
-    ],
-  },
-  {
-    label: 'Teams',
-    teams: [
-      {
-        label: 'Acme Inc.',
-        value: 'acme-inc',
-      },
-      {
-        label: 'Monsters Inc.',
-        value: 'monsters',
-      },
-    ],
-  },
-]
-
-type Team = (typeof groups)[number]['teams'][number]
+type Team = {
+  value: string
+  label: string
+}
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
 export function TeamSwitcher({ className }: TeamSwitcherProps) {
+  const { user } = useAuth({ middleware: 'auth' })
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
+  const groups = [
+    {
+      label: 'Personal Account',
+      teams: [
+        {
+          label: user?.name,
+          value: 'personal',
+        },
+      ],
+    },
+    {
+      label: 'Teams',
+      teams: [
+        {
+          label: 'Acme Inc.',
+          value: 'acme-inc',
+        },
+        {
+          label: 'Monsters Inc.',
+          value: 'monsters',
+        },
+      ],
+    },
+  ]
   const [selectedTeam, setSelectedTeam] = React.useState<Team>(
     groups[0].teams[0],
   )

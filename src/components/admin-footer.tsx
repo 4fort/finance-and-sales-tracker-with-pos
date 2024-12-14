@@ -1,7 +1,7 @@
 'use client'
 
-import { Facebook, Instagram, Twitter } from "lucide-react"
-import Link from "next/link"
+import { Facebook, Instagram, Twitter } from 'lucide-react'
+import Link from 'next/link'
 
 export function AdminFooter() {
   return (
@@ -11,27 +11,37 @@ export function AdminFooter() {
           <h3 className="text-lg font-semibold text-gray-900">Quick Links</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/dashboard" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/dashboard"
+                className="hover:text-gray-900 transition-colors">
                 Dashboard
               </Link>
             </li>
             <li>
-              <Link href="/orders" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/orders"
+                className="hover:text-gray-900 transition-colors">
                 Orders
               </Link>
             </li>
             <li>
-              <Link href="/products" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/products"
+                className="hover:text-gray-900 transition-colors">
                 Products
               </Link>
             </li>
             <li>
-              <Link href="/customers" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/customers"
+                className="hover:text-gray-900 transition-colors">
                 Customers
               </Link>
             </li>
             <li>
-              <Link href="/analytics" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/analytics"
+                className="hover:text-gray-900 transition-colors">
                 Analytics
               </Link>
             </li>
@@ -41,27 +51,37 @@ export function AdminFooter() {
           <h3 className="text-lg font-semibold text-gray-900">Support</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/help-center" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/help-center"
+                className="hover:text-gray-900 transition-colors">
                 Help Center
               </Link>
             </li>
             <li>
-              <Link href="/contact-support" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/contact-support"
+                className="hover:text-gray-900 transition-colors">
                 Contact Support
               </Link>
             </li>
             <li>
-              <Link href="/faq" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/faq"
+                className="hover:text-gray-900 transition-colors">
                 FAQ
               </Link>
             </li>
             <li>
-              <Link href="/documentation" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/documentation"
+                className="hover:text-gray-900 transition-colors">
                 Documentation
               </Link>
             </li>
             <li>
-              <Link href="/api-status" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/api-status"
+                className="hover:text-gray-900 transition-colors">
                 API Status
               </Link>
             </li>
@@ -71,27 +91,37 @@ export function AdminFooter() {
           <h3 className="text-lg font-semibold text-gray-900">Legal</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/terms" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/terms"
+                className="hover:text-gray-900 transition-colors">
                 Terms of Service
               </Link>
             </li>
             <li>
-              <Link href="/privacy" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/privacy"
+                className="hover:text-gray-900 transition-colors">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="/cookies" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/cookies"
+                className="hover:text-gray-900 transition-colors">
                 Cookie Policy
               </Link>
             </li>
             <li>
-              <Link href="/gdpr" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/gdpr"
+                className="hover:text-gray-900 transition-colors">
                 GDPR Compliance
               </Link>
             </li>
             <li>
-              <Link href="/security" className="hover:text-gray-900 transition-colors">
+              <Link
+                href="/security"
+                className="hover:text-gray-900 transition-colors">
                 Security
               </Link>
             </li>
@@ -104,15 +134,21 @@ export function AdminFooter() {
           <p>San Francisco, CA 94105</p>
           <p>support@acme-ecommerce.com</p>
           <div className="flex space-x-4 mt-4">
-            <Link href="https://facebook.com" className="text-gray-400 hover:text-gray-900 transition-colors">
+            <Link
+              href="https://facebook.com"
+              className="text-gray-400 hover:text-gray-900 transition-colors">
               <Facebook className="h-6 w-6" />
               <span className="sr-only">Facebook</span>
             </Link>
-            <Link href="https://twitter.com" className="text-gray-400 hover:text-gray-900 transition-colors">
+            <Link
+              href="https://twitter.com"
+              className="text-gray-400 hover:text-gray-900 transition-colors">
               <Twitter className="h-6 w-6" />
               <span className="sr-only">Twitter</span>
             </Link>
-            <Link href="https://instagram.com" className="text-gray-400 hover:text-gray-900 transition-colors">
+            <Link
+              href="https://instagram.com"
+              className="text-gray-400 hover:text-gray-900 transition-colors">
               <Instagram className="h-6 w-6" />
               <span className="sr-only">Instagram</span>
             </Link>
