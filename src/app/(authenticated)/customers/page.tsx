@@ -1,6 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import Cookies from 'js-cookie'
+
 import {
   CaretSortIcon,
   ChevronDownIcon,
@@ -42,50 +44,56 @@ import {
 import DonutChart from '@/components/donut-charts'
 import CustomBarChart from '@/components/charts'
 import { ChartLine } from '@/components/chart-line-interactive'
-const data: Customer[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'Alice Johnson',
-    email: 'alice@example.com',
-    status: 'active',
-    joinDate: '2023-01-15',
-  },
-  {
-    id: '3u1reuv4',
-    name: 'Bob Smith',
-    email: 'bob@example.com',
-    status: 'inactive',
-    joinDate: '2023-02-20',
-  },
-  {
-    id: 'derv1ws0',
-    name: 'Charlie Brown',
-    email: 'charlie@example.com',
-    status: 'active',
-    joinDate: '2023-03-10',
-  },
-  {
-    id: '5kma53ae',
-    name: 'Diana Ross',
-    email: 'diana@example.com',
-    status: 'active',
-    joinDate: '2023-04-05',
-  },
-  {
-    id: 'bhqecj4p',
-    name: 'Edward Norton',
-    email: 'edward@example.com',
-    status: 'inactive',
-    joinDate: '2023-05-12',
-  },
-]
-
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/auth'
+import { CreateCustomerDialog } from '@/components/Customers/CreateCustomerDialog'
+import axios from '@/lib/axios'
+import useSWR, { mutate } from 'swr'
+import { UpdateCustomerDialog } from '@/components/Customers/UpdateCustomerDialog'
+// const data: Customer[] = [
+//   {
+//     id: 'm5gr84i9',
+//     name: 'Alice Johnson',
+//     email: 'alice@example.com',
+//     status: 'active',
+//     joinDate: '2023-01-15',
+//   },
+//   {
+//     id: '3u1reuv4',
+//     name: 'Bob Smith',
+//     email: 'bob@example.com',
+//     status: 'inactive',
+//     joinDate: '2023-02-20',
+//   },
+//   {
+//     id: 'derv1ws0',
+//     name: 'Charlie Brown',
+//     email: 'charlie@example.com',
+//     status: 'active',
+//     joinDate: '2023-03-10',
+//   },
+//   {
+//     id: '5kma53ae',
+//     name: 'Diana Ross',
+//     email: 'diana@example.com',
+//     status: 'active',
+//     joinDate: '2023-04-05',
+//   },
+//   {
+//     id: 'bhqecj4p',
+//     name: 'Edward Norton',
+//     email: 'edward@example.com',
+//     status: 'inactive',
+//     joinDate: '2023-05-12',
+//   },
+// ]
 export type Customer = {
-  id: string
   name: string
   email: string
-  status: 'active' | 'inactive'
-  joinDate: string
+  subscription_status: string
+  created_at: string
+  first_name: string
+  last_name: string
 }
 
 export const columns: ColumnDef<Customer>[] = [
@@ -110,8 +118,12 @@ export const columns: ColumnDef<Customer>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+    header: 'Full Name',
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.original.first_name + ' ' + row.original.last_name}
+      </div>
+    ),
   },
   {
     accessorKey: 'email',
@@ -125,19 +137,46 @@ export const columns: ColumnDef<Customer>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => <div className="lowercase">{row.original.email}</div>,
   },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
+      <div className="capitalize">{row.original.subscription_status}</div>
     ),
   },
   {
     accessorKey: 'joinDate',
     header: 'Join Date',
-    cell: ({ row }) => <div>{row.getValue('joinDate')}</div>,
+    cell: ({ row }) => {
+      const date = new Date(row.original.created_at)
+
+      // Format: "Jan 5, 2024"
+      const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+
+      // Alternative Format: "05/01/2024"
+      // const formattedDate = date.toLocaleDateString('en-US', {
+      //   year: 'numeric',
+      //   month: '2-digit',
+      //   day: '2-digit'
+      // });
+
+      // Alternative Format: "January 5, 2024 14:30"
+      // const formattedDate = date.toLocaleString('en-US', {
+      //   year: 'numeric',
+      //   month: 'long',
+      //   day: 'numeric',
+      //   hour: '2-digit',
+      //   minute: '2-digit'
+      // });
+
+      return <div>{formattedDate}</div>
+    },
   },
   {
     id: 'actions',
@@ -160,8 +199,14 @@ export const columns: ColumnDef<Customer>[] = [
               Copy customer ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => deleteCustomer(customer.id)}>
+              Delete customer
+            </DropdownMenuItem>
+
+            <UpdateCustomerDialog
+              customerId={customer.id}
+              customer={customer}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -169,17 +214,75 @@ export const columns: ColumnDef<Customer>[] = [
   },
 ]
 
+const deleteCustomer = async (customerId: number) => {
+  try {
+    const csrf = async () => {
+      await axios.get('/sanctum/csrf-cookie')
+    }
+    const baseUrl = `/api/v1/customers/${customerId}`
+    await csrf()
+    await axios.delete(baseUrl)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const CustomersPage = () => {
+  // const [cookies, setCookies] = useState<string | undefined>('')
+  // useEffect(() => {
+  //   const allCookies = document.cookie // All cookies as a single string
+  //   const myCookie = allCookies
+  //     .split('; ')
+  //     .find(row => row.startsWith('XSRF-TOKEN='))
+  //     ?.split('=')[1]
+
+  //   console.log('Cookie Value:', myCookie)
+  //   setCookies(myCookie)
+  // }, [])
+
+  const { user } = useAuth({ middleware: 'auth' })
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   )
+  // const [data, setData] = useState<Customer[] | null>(null)
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const baseUrl = `api/v1/customers?user_id=${user.id}`
+  // const csrfToken = Cookies.get('XSRF-TOKEN')
 
+  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
+    try {
+      const res = await axios.get(baseUrl)
+      return res.data.data as Customer[]
+    } catch (error: any) {
+      console.error(error)
+    }
+  })
+
+  // const fetchAllCustomers = async () => {
+  //   try {
+  //     const baseUrl = `api/v1/customers?user_id=${user.id}`
+
+  //     const response = await axios.get(baseUrl)
+
+  //     if (response.status !== 200) {
+  //       throw new Error(`HTTP error! status: ${response.status}`)
+  //     }
+
+  //     setData(response.data.data)
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
+  // useEffect(() => {
+  //   if (user.id) {
+  //     fetchAllCustomers()
+  //   }
+  // }, [user.id])
   const table = useReactTable({
-    data,
+    data: data ? data : [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -205,7 +308,7 @@ const CustomersPage = () => {
         <DonutChart />
       </div>
       <div className="w-full">
-        <div className="flex items-center pb-4">
+        <div className="flex items-center pb-4 gap-2">
           <Input
             placeholder="Filter emails..."
             value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
@@ -214,6 +317,7 @@ const CustomersPage = () => {
             }
             className="max-w-sm bg-white"
           />
+          <CreateCustomerDialog user_id={user.id ? user.id : null} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
