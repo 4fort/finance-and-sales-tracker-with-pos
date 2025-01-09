@@ -18,13 +18,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 287, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 190, fill: 'var(--color-other)' },
-]
+import { useAuth } from '@/hooks/auth'
+import useSWR from 'swr'
+import axios from '@/lib/axios'
+import { Customer } from '@/app/(authenticated)/customers/page'
+import { useEffect, useState } from 'react'
 
 const chartConfig = {
   visitors: {
@@ -38,30 +36,72 @@ const chartConfig = {
     label: 'Safari',
     color: 'hsl(var(--chart-2))',
   },
-  firefox: {
-    label: 'Firefox',
-    color: 'hsl(var(--chart-3))',
-  },
-  edge: {
-    label: 'Edge',
-    color: 'hsl(var(--chart-4))',
-  },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))',
-  },
 } satisfies ChartConfig
 
 export default function DonutChart() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [])
+  const [offlineCount, setOfflineCount] = useState(0)
+  const [onlineCount, setOnlineCount] = useState(0)
+  const { user } = useAuth({ middleware: 'auth' })
+  const baseUrl = `api/v1/customers?user_id=${user.id}`
+  const chartData = [
+    { browser: 'active', visitors: onlineCount, fill: 'var(--color-safari)' },
+    { browser: 'offline', visitors: offlineCount, fill: 'var(--color-chrome)' },
+  ]
+  const [totalVisitors, setTotalVisitors] = useState(0)
+  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
+    try {
+      const res = await axios.get(baseUrl)
+
+      // const groupedByDate = res.data.data.reduce((acc, user) => {
+      //   // Extract the date part only (YYYY-MM-DD)
+      //   const date = user.created_at.split('T')[0]
+
+      //   // Find or initialize the group for this date
+      //   if (!acc[date]) {
+      //     acc[date] = { created_at: date, active: 0, offline: 0 }
+      //   }
+
+      //   // Increment active or offline count based on user status
+      //   if (user.subscription_status === 'active') {
+      //     acc[date].active++
+      //   } else if (user.subscription_status === 'offline') {
+      //     acc[date].offline++
+      //   }
+
+      //   return acc
+      // }, {})
+
+      // // Step 2: Convert grouped data into the desired array structure
+      // const result = Object.values(groupedByDate)
+      // if (result) {
+      //   setLineChartData(result)
+      //   console.log(result)
+      // }
+      return res.data.data
+    } catch (error: any) {
+      console.error(error)
+    }
+  })
+
+  useEffect(() => {
+    if (data) {
+      const activeCount = data.filter(
+        (body: Customer) => body.subscription_status === 'active',
+      ).length
+      const offlineCount = data.filter(
+        (body: Customer) => body.subscription_status === 'offline',
+      ).length
+      setOfflineCount(offlineCount)
+      setOnlineCount(activeCount)
+      setTotalVisitors(chartData.reduce((acc, curr) => acc + curr.visitors, 0))
+    }
+  }, [data, chartData])
 
   return (
     <Card className="flex flex-col w-fit">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Customer Chart Analysis</CardTitle>
+        <CardDescription>January - December 2025</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -97,7 +137,7 @@ export default function DonutChart() {
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground">
-                          Visitors
+                          Customers
                         </tspan>
                       </text>
                     )
@@ -109,11 +149,8 @@ export default function DonutChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total customers for the last 12 months
         </div>
       </CardFooter>
     </Card>
