@@ -11,8 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Order } from '@/types/User'
 import { MoreHorizontal, Eye, Edit, Trash, Send } from 'lucide-react'
+import { Orders } from './page'
 
-export function OrderActions({ order }: { order: Order }) {
+export function OrderActions({ order }: { order: Orders }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
