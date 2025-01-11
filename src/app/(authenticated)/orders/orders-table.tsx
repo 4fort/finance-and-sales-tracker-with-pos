@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Order } from '@/types/User'
 import { formatDate, formatCurrency } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -22,53 +21,55 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ChevronDown } from 'lucide-react'
+import { Orders } from './page'
+import { CreateOrderDialog } from '@/components/Orders/CreateOrderDialog'
 
-const orders: Order[] = [
-  {
-    id: '1234',
-    customer: 'John Doe',
-    email: 'john@example.com',
-    date: new Date('2023-04-01'),
-    status: 'Processing',
-    total: 125.99,
-    items: 3,
-  },
-  {
-    id: '5678',
-    customer: 'Jane Smith',
-    email: 'jane@example.com',
-    date: new Date('2023-04-02'),
-    status: 'Shipped',
-    total: 245.5,
-    items: 2,
-  },
-  {
-    id: '9012',
-    customer: 'Bob Johnson',
-    email: 'bob@example.com',
-    date: new Date('2023-04-03'),
-    status: 'Delivered',
-    total: 75.0,
-    items: 1,
-  },
-  {
-    id: '3456',
-    customer: 'Alice Brown',
-    email: 'alice@example.com',
-    date: new Date('2023-04-04'),
-    status: 'Cancelled',
-    total: 199.99,
-    items: 4,
-  },
-]
+// const orders: Order[] = [
+//   {
+//     id: '1234',
+//     customer: 'John Doe',
+//     email: 'john@example.com',
+//     date: new Date('2023-04-01'),
+//     status: 'Processing',
+//     total: 125.99,
+//     items: 3,
+//   },
+//   {
+//     id: '5678',
+//     customer: 'Jane Smith',
+//     email: 'jane@example.com',
+//     date: new Date('2023-04-02'),
+//     status: 'Shipped',
+//     total: 245.5,
+//     items: 2,
+//   },
+//   {
+//     id: '9012',
+//     customer: 'Bob Johnson',
+//     email: 'bob@example.com',
+//     date: new Date('2023-04-03'),
+//     status: 'Delivered',
+//     total: 75.0,
+//     items: 1,
+//   },
+//   {
+//     id: '3456',
+//     customer: 'Alice Brown',
+//     email: 'alice@example.com',
+//     date: new Date('2023-04-04'),
+//     status: 'Cancelled',
+//     total: 199.99,
+//     items: 4,
+//   },
+// ]
 
-export function OrdersTable() {
+export function OrdersTable({ orders }: { orders: Orders[] }) {
   const [visibleColumns, setVisibleColumns] = useState({
     id: true,
-    customer: true,
+    full_name: true,
     email: true,
-    date: true,
-    status: true,
+    created_at: true,
+    order_status: true,
     total: true,
     items: true,
   })
@@ -76,16 +77,25 @@ export function OrdersTable() {
   const [filteredOrders, setFilteredOrders] = useState(orders)
 
   useEffect(() => {
-    const lowercasedSearch = searchTerm.toLowerCase()
-    const filtered = orders.filter(
-      order =>
-        order.id.toLowerCase().includes(lowercasedSearch) ||
-        order.customer.toLowerCase().includes(lowercasedSearch) ||
-        order.email.toLowerCase().includes(lowercasedSearch) ||
-        order.status.toLowerCase().includes(lowercasedSearch),
-    )
-    setFilteredOrders(filtered)
-  }, [searchTerm])
+    if (orders) {
+      const lowercasedSearch = searchTerm.toLowerCase()
+      const filtered = orders?.filter(
+        order =>
+          order.id === lowercasedSearch ||
+          order.relationship.customer.first_name
+            .toLowerCase()
+            .includes(lowercasedSearch) ||
+          order.relationship.customer.last_name
+            .toLowerCase()
+            .includes(lowercasedSearch) ||
+          order.relationship.customer.email
+            .toLowerCase()
+            .includes(lowercasedSearch) ||
+          order.order_status.toLowerCase().includes(lowercasedSearch),
+      )
+      setFilteredOrders(filtered)
+    }
+  }, [searchTerm, orders])
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
@@ -98,8 +108,9 @@ export function OrdersTable() {
           placeholder="Search orders..."
           value={searchTerm}
           onChange={handleSearch}
-          className="max-w-sm bg-white"
+          className="max-w-sm bg-white mr-2"
         />
+        <CreateOrderDialog />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -126,10 +137,10 @@ export function OrdersTable() {
           <TableHeader>
             <TableRow>
               {visibleColumns.id && <TableHead>Order ID</TableHead>}
-              {visibleColumns.customer && <TableHead>Customer</TableHead>}
+              {visibleColumns.full_name && <TableHead>Customer</TableHead>}
               {visibleColumns.email && <TableHead>Email</TableHead>}
-              {visibleColumns.date && <TableHead>Date</TableHead>}
-              {visibleColumns.status && <TableHead>Status</TableHead>}
+              {visibleColumns.created_at && <TableHead>Date</TableHead>}
+              {visibleColumns.order_status && <TableHead>Status</TableHead>}
               {visibleColumns.total && (
                 <TableHead className="text-right">Total</TableHead>
               )}
@@ -140,36 +151,49 @@ export function OrdersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOrders.map(order => (
-              <TableRow key={order.id}>
-                {visibleColumns.id && (
-                  <TableCell className="font-medium">{order.id}</TableCell>
-                )}
-                {visibleColumns.customer && (
-                  <TableCell>{order.customer}</TableCell>
-                )}
-                {visibleColumns.email && <TableCell>{order.email}</TableCell>}
-                {visibleColumns.date && (
-                  <TableCell>{formatDate(order.date)}</TableCell>
-                )}
-                {visibleColumns.status && (
+            {filteredOrders &&
+              filteredOrders.map(order => (
+                <TableRow key={order.id}>
+                  {visibleColumns.id && (
+                    <TableCell className="font-medium">{order.id}</TableCell>
+                  )}
+                  {visibleColumns.full_name && (
+                    <TableCell>
+                      {order.relationship.customer.first_name +
+                        ' ' +
+                        order.relationship.customer.last_name}
+                    </TableCell>
+                  )}
+                  {visibleColumns.email && (
+                    <TableCell>{order.relationship.customer.email}</TableCell>
+                  )}
+                  {visibleColumns.created_at && (
+                    <TableCell>
+                      {new Date(order.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </TableCell>
+                  )}
+                  {visibleColumns.order_status && (
+                    <TableCell>
+                      <OrderStatusBadge status={order.order_status} />
+                    </TableCell>
+                  )}
+                  {visibleColumns.total && (
+                    <TableCell className="text-right">
+                      {formatCurrency(order.total)}
+                    </TableCell>
+                  )}
+                  {visibleColumns.items && (
+                    <TableCell className="text-center">{order.items}</TableCell>
+                  )}
                   <TableCell>
-                    <OrderStatusBadge status={order.status} />
+                    <OrderActions order={order} />
                   </TableCell>
-                )}
-                {visibleColumns.total && (
-                  <TableCell className="text-right">
-                    {formatCurrency(order.total)}
-                  </TableCell>
-                )}
-                {visibleColumns.items && (
-                  <TableCell className="text-center">{order.items}</TableCell>
-                )}
-                <TableCell>
-                  <OrderActions order={order} />
-                </TableCell>
-              </TableRow>
-            ))}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>
@@ -178,26 +202,20 @@ export function OrdersTable() {
 }
 
 function OrderStatusBadge({ status }: { status: string }) {
-  let color:
-    | 'outline'
-    | 'secondary'
-    | 'destructive'
-    | 'default'
-    | null
-    | undefined = 'default'
+  let color
   switch (status.toLowerCase()) {
     case 'processing':
-      color = 'outline'
+      color = 'bg-transparent text-black border-black-50 shadow-none'
       break
     case 'shipped':
-      color = 'secondary'
+      color = 'bg-green-500'
       break
     case 'delivered':
-      color = 'default'
+      color = 'bg-gray-400'
       break
     case 'cancelled':
-      color = 'destructive'
+      color = 'bg-red-400'
       break
   }
-  return <Badge variant={color}>{status}</Badge>
+  return <Badge className={color}>{status}</Badge>
 }
