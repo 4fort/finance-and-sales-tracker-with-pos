@@ -67,19 +67,19 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
         },
       ],
     },
-    {
-      label: 'Teams',
-      teams: [
-        {
-          label: 'Acme Inc.',
-          value: 'acme-inc',
-        },
-        {
-          label: 'Monsters Inc.',
-          value: 'monsters',
-        },
-      ],
-    },
+    // {
+    //   label: 'Teams',
+    //   teams: [
+    //     {
+    //       label: 'Acme Inc.',
+    //       value: 'acme-inc',
+    //     },
+    //     {
+    //       label: 'Monsters Inc.',
+    //       value: 'monsters',
+    //     },
+    //   ],
+    // },
   ]
   const [selectedTeam, setSelectedTeam] = React.useState<Team>(
     groups[0].teams[0],
@@ -109,7 +109,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search team..." />
+            {/* <CommandInput placeholder="Search team..." /> */}
             <CommandList>
               <CommandEmpty>No team found.</CommandEmpty>
               {groups.map(group => (
@@ -148,14 +148,14 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
             <CommandList>
               <CommandGroup>
                 <DialogTrigger asChild>
-                  <CommandItem
+                  {/* <CommandItem
                     onSelect={() => {
                       setOpen(false)
                       setShowNewTeamDialog(true)
                     }}>
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
                     Create Team
-                  </CommandItem>
+                  </CommandItem> */}
                 </DialogTrigger>
               </CommandGroup>
             </CommandList>

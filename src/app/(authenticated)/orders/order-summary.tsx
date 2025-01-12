@@ -1,34 +1,54 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Package, RefreshCcw, Truck } from 'lucide-react'
-
-const summaryItems = [
-  {
-    title: 'Total Orders',
-    value: '1,234',
-    icon: Package,
-    color: 'text-blue-600',
-  },
-  {
-    title: 'Pending Orders',
-    value: '56',
-    icon: RefreshCcw,
-    color: 'text-yellow-600',
-  },
-  {
-    title: 'Shipped Orders',
-    value: '1,178',
-    icon: Truck,
-    color: 'text-green-600',
-  },
-  {
-    title: 'Total Revenue',
-    value: '$45,678',
-    icon: DollarSign,
-    color: 'text-purple-600',
-  },
-]
+import { Orders } from './page'
+import { useAuth } from '@/hooks/auth'
+import useSWR from 'swr'
+import axios from '@/lib/axios'
 
 export function OrderSummary() {
+  const { user } = useAuth({ middleware: 'auth' })
+  const baseUrl = `api/v1/orders?user_id=${user.id}`
+  // const csrfToken = Cookies.get('XSRF-TOKEN')
+
+  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
+    try {
+      const res = await axios.get(baseUrl)
+      console.log(res.data.data)
+      return res.data.data as Orders[]
+    } catch (error: any) {
+      console.error(error)
+    }
+  })
+  const summaryItems = [
+    {
+      title: 'Total Orders',
+      value: data?.length,
+      icon: Package,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Pending Orders',
+      value: data?.filter(order => order.order_status === 'pending').length,
+      icon: RefreshCcw,
+      color: 'text-yellow-600',
+    },
+    {
+      title: 'Shipped Orders',
+      value: data?.filter(order => order.order_status === 'shipped').length,
+      icon: Truck,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Total Revenue',
+      value:
+        '$ ' +
+        data
+          ?.filter(order => order.order_status === 'delivered')
+          .reduce((acc, curr) => acc + curr.total, 0),
+      icon: DollarSign,
+      color: 'text-purple-600',
+    },
+  ]
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {summaryItems.map(item => (
