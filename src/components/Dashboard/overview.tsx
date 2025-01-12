@@ -1,59 +1,63 @@
 'use client'
 
+import { Orders } from '@/app/(authenticated)/orders/page'
+import { useAuth } from '@/hooks/auth'
+import axios from '@/lib/axios'
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
-
-const data = [
-  {
-    name: 'Jan',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Feb',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Mar',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Apr',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'May',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jun',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jul',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Aug',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Sep',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Oct',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Nov',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Dec',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-]
+import useSWR from 'swr'
 
 export function Overview() {
+  const { user } = useAuth({ middleware: 'auth' })
+  const baseUrl = `api/v1/orders?user_id=${user.id}`
+  // const csrfToken = Cookies.get('XSRF-TOKEN')
+
+  const {
+    data: orderData,
+    error,
+    mutate,
+    isLoading,
+  } = useSWR(baseUrl, async () => {
+    try {
+      const res = await axios.get(baseUrl)
+      console.log(res.data.data)
+      return res.data.data as Orders[]
+    } catch (error: any) {
+      console.error(error)
+    }
+  })
+
+  const orders = orderData || [] // Fallback if `orderData` is undefined
+
+  // Create a mapping from month names to their respective indices
+  const months = {
+    Jan: 0,
+    Feb: 1,
+    Mar: 2,
+    Apr: 3,
+    May: 4,
+    Jun: 5,
+    Jul: 6,
+    Aug: 7,
+    Sep: 8,
+    Oct: 9,
+    Nov: 10,
+    Dec: 11,
+  }
+
+  const monthlyTotals = new Array(12).fill(0)
+
+  orders.forEach(order => {
+    const createdAt = new Date(order.created_at)
+    const monthIndex = createdAt.getMonth() // 0-11 for Jan-Dec
+    monthlyTotals[monthIndex] += order.total // Summing totals per month
+  })
+
+  // Update the `data` array with the filtered totals
+  const data = Object.keys(months).map((month, index) => ({
+    name: month,
+    total: monthlyTotals[index],
+  }))
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
