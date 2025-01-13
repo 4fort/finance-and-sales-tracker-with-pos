@@ -97,132 +97,6 @@ export type Customer = {
   last_name: string
 }
 
-export const columns: ColumnDef<Customer>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Full Name',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.original.first_name + ' ' + row.original.last_name}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Email
-          <CaretSortIcon className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.original.email}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.subscription_status}</div>
-    ),
-  },
-  {
-    accessorKey: 'joinDate',
-    header: 'Join Date',
-    cell: ({ row }) => {
-      const date = new Date(row.original.created_at)
-
-      // Format: "Jan 5, 2024"
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
-
-      // Alternative Format: "05/01/2024"
-      // const formattedDate = date.toLocaleDateString('en-US', {
-      //   year: 'numeric',
-      //   month: '2-digit',
-      //   day: '2-digit'
-      // });
-
-      // Alternative Format: "January 5, 2024 14:30"
-      // const formattedDate = date.toLocaleString('en-US', {
-      //   year: 'numeric',
-      //   month: 'long',
-      //   day: 'numeric',
-      //   hour: '2-digit',
-      //   minute: '2-digit'
-      // });
-
-      return <div>{formattedDate}</div>
-    },
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const customer = row.original
-      const queryClient = useQueryClient()
-      const { mutateAsync: deleteCustomerMutation } = useMutation({
-        mutationFn: deleteCustomer,
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['customers'] })
-        },
-      })
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(customer.id)}>
-              Copy customer ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => deleteCustomerMutation(customer.id)}>
-              Delete customer
-            </DropdownMenuItem>
-
-            <UpdateCustomerDialog
-              customerId={customer.id}
-              customer={customer}
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
-
 const deleteCustomer = async (customerId: number) => {
   try {
     const csrf = async () => {
@@ -237,6 +111,134 @@ const deleteCustomer = async (customerId: number) => {
 }
 
 const CustomersPage = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteCustomerMutation } = useMutation({
+    mutationFn: deleteCustomer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+    },
+  })
+  const columns: ColumnDef<Customer>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={value => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Full Name',
+      cell: ({ row }) => (
+        <div className="capitalize">
+          {row.original.first_name + ' ' + row.original.last_name}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'email',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            Email
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{row.original.email}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.original.subscription_status}</div>
+      ),
+    },
+    {
+      accessorKey: 'joinDate',
+      header: 'Join Date',
+      cell: ({ row }) => {
+        const date = new Date(row.original.created_at)
+
+        // Format: "Jan 5, 2024"
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+
+        // Alternative Format: "05/01/2024"
+        // const formattedDate = date.toLocaleDateString('en-US', {
+        //   year: 'numeric',
+        //   month: '2-digit',
+        //   day: '2-digit'
+        // });
+
+        // Alternative Format: "January 5, 2024 14:30"
+        // const formattedDate = date.toLocaleString('en-US', {
+        //   year: 'numeric',
+        //   month: 'long',
+        //   day: 'numeric',
+        //   hour: '2-digit',
+        //   minute: '2-digit'
+        // });
+
+        return <div>{formattedDate}</div>
+      },
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const customer = row.original
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(customer.id)}>
+                Copy customer ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => deleteCustomerMutation(customer.id)}>
+                Delete customer
+              </DropdownMenuItem>
+
+              <UpdateCustomerDialog
+                customerId={customer.id}
+                customer={customer}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+
   // const [cookies, setCookies] = useState<string | undefined>('')
   // useEffect(() => {
   //   const allCookies = document.cookie // All cookies as a single string

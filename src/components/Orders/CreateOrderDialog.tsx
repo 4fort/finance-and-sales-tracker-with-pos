@@ -145,7 +145,7 @@ export function CreateOrderDialog() {
         <DialogHeader>
           <DialogTitle>Add New Order</DialogTitle>
           <DialogDescription>
-            Add your new order here. Click submit when you're done.
+            Add your new order here. Click submit when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
