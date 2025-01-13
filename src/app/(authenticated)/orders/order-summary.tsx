@@ -5,20 +5,7 @@ import { useAuth } from '@/hooks/auth'
 import useSWR from 'swr'
 import axios from '@/lib/axios'
 
-export function OrderSummary() {
-  const { user } = useAuth({ middleware: 'auth' })
-  const baseUrl = `api/v1/orders?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
-
-  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      console.log(res.data.data)
-      return res.data.data as Orders[]
-    } catch (error: any) {
-      console.error(error)
-    }
-  })
+export function OrderSummary({ data }: { data: Orders[] }) {
   const summaryItems = [
     {
       title: 'Total Orders',

@@ -15,6 +15,7 @@ import { Orders } from './page'
 import { UpdateOrderDialog } from '@/components/Orders/UpdateOrderDialog'
 import { useState } from 'react'
 import axios from '@/lib/axios'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function OrderActions({ order }: { order: Orders }) {
   const deleteOrder = async () => {
@@ -31,6 +32,13 @@ export function OrderActions({ order }: { order: Orders }) {
       console.error(error)
     }
   }
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteOrderMutation } = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+    },
+  })
   const [openDialog, setOpenDialog] = useState(false)
   return (
     <DropdownMenu>
@@ -57,7 +65,9 @@ export function OrderActions({ order }: { order: Orders }) {
           Edit order
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600" onClick={deleteOrder}>
+        <DropdownMenuItem
+          className="text-red-600"
+          onClick={deleteOrderMutation}>
           <Trash className="mr-2 h-4 w-4" />
           Delete order
         </DropdownMenuItem>

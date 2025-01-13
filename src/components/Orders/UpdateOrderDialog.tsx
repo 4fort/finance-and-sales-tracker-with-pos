@@ -20,6 +20,7 @@ import { CustomersComboBox } from './CustomersComboBox'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { OrderStatusComboBox } from './OrderStatusComboBox'
 import { Orders } from '@/app/(authenticated)/orders/page'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -41,6 +42,7 @@ export function UpdateOrderDialog({
   openDialog: boolean
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+  const queryClient = useQueryClient()
   const { user } = useAuth({ middleware: 'auth' })
   const baseUrl = `api/v1/customers?user_id=${user.id}`
   // const csrfToken = Cookies.get('XSRF-TOKEN')
@@ -90,22 +92,30 @@ export function UpdateOrderDialog({
   //     }
   //   }
   // })
-  const onSubmit = async (data: OrderFormValues) => {
-    try {
-      const csrf = async () => {
-        await axios.get('/sanctum/csrf-cookie')
-      }
-      console.log('id', order.id)
-      const baseUrl = `/api/v1/orders/${order.id}}`
+  const { mutateAsync: updateCustomerMutation } = useMutation({
+    mutationFn: async (data: OrderFormValues) => {
+      try {
+        const csrf = async () => {
+          await axios.get('/sanctum/csrf-cookie')
+        }
+        console.log('id', order.id)
+        const baseUrl = `/api/v1/orders/${order.id}}`
 
-      await csrf()
-      const res = await axios.patch(baseUrl, { ...data, id: order.id })
-      console.log(res)
-      reset()
-    } catch (error) {
-      console.error(error)
-    }
-    // Reset the form after submission
+        await csrf()
+        const res = await axios.patch(baseUrl, { ...data, id: order.id })
+        console.log(res)
+        reset()
+      } catch (error) {
+        console.error(error)
+      }
+      // Reset the form after submission
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+    },
+  })
+  const onSubmit = async (data: OrderFormValues) => {
+    await updateCustomerMutation(data)
   }
 
   // Dummy function to generate user_id (replace with real implementation)

@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { SubscriptionComboBox } from './SubscriptionComboBox'
 import axios from '@/lib/axios'
 import { Customer } from '@/app/(authenticated)/customers/page'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -51,35 +52,44 @@ export function UpdateCustomerDialog({
       subscription_status: customer.subscription_status, // Default value for the combobox
     },
   })
-  const onSubmit = async (data: CustomerFormValues) => {
-    try {
-      const csrf = async () => {
-        await axios.get('/sanctum/csrf-cookie')
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateCustomerMutation } = useMutation({
+    mutationFn: async (data: CustomerFormValues) => {
+      try {
+        const csrf = async () => {
+          await axios.get('/sanctum/csrf-cookie')
+        }
+        const baseUrl = `/api/v1/customers/${customerId}`
+
+        await csrf()
+        await axios.patch(baseUrl, data)
+        //   mutate()
+        //   const response = await fetch(baseUrl, {
+        //     method: 'POST',
+        //     headers: {
+        //       Accept: 'application/json',
+        //       'Content-Type': 'application/json',
+        //       // Add this if you're using authentication
+        //       // 'Authorization': 'Bearer your_token_here'
+        //     },
+        //     body: JSON.stringify(customerData),
+        //   })
+
+        //   if (!response.ok) {
+        //     throw new Error(`HTTP error! status: ${response.status}`)
+        //   }
+        reset()
+      } catch (error) {
+        console.error(error)
       }
-      const baseUrl = `/api/v1/customers/${customerId}`
-
-      await csrf()
-      await axios.patch(baseUrl, data)
-      //   mutate()
-      //   const response = await fetch(baseUrl, {
-      //     method: 'POST',
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //       // Add this if you're using authentication
-      //       // 'Authorization': 'Bearer your_token_here'
-      //     },
-      //     body: JSON.stringify(customerData),
-      //   })
-
-      //   if (!response.ok) {
-      //     throw new Error(`HTTP error! status: ${response.status}`)
-      //   }
-      reset()
-    } catch (error) {
-      console.error(error)
-    }
-    // Reset the form after submission
+      // Reset the form after submission
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+    },
+  })
+  const onSubmit = async (data: CustomerFormValues) => {
+    await updateCustomerMutation({ ...data })
   }
 
   // Dummy function to generate user_id (replace with real implementation)

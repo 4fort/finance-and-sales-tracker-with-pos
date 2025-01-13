@@ -1,3 +1,4 @@
+'use client'
 import { Metadata } from 'next'
 import Image from 'next/image'
 
@@ -24,6 +25,7 @@ import useSWR from 'swr'
 import axios from '@/lib/axios'
 import { Orders } from '@/app/(authenticated)/orders/page'
 import { Customer } from '@/app/(authenticated)/customers/page'
+import { useQuery } from '@tanstack/react-query'
 
 // Metadata for the dashboard page
 export const metadata: Metadata = {
@@ -58,35 +60,37 @@ const StatCard = ({
 export function Dashboard() {
   const { user } = useAuth({ middleware: 'auth' })
   const ordersBaseUrl = `api/v1/orders?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
-
   const customersbaseUrl = `api/v1/customers?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      try {
+        const res = await axios.get(ordersBaseUrl)
+        console.log(res.data.data)
+        return res.data.data as Orders[]
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
 
   const {
     data: customersData,
     error: customersError,
-    mutate: mutateCustomers,
     isLoading: customersIsLoading,
-  } = useSWR(customersbaseUrl, async () => {
-    try {
-      const res = await axios.get(customersbaseUrl)
-      return res.data.data as Customer[]
-    } catch (error: any) {
-      console.error(error)
-    }
+  } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      try {
+        const res = await axios.get(customersbaseUrl)
+        return res.data.data as Customer[]
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
   })
 
-  const { data, error, mutate, isLoading } = useSWR(ordersBaseUrl, async () => {
-    try {
-      const res = await axios.get(ordersBaseUrl)
-      console.log(res.data.data)
-      return res.data.data as Orders[]
-    } catch (error: any) {
-      console.error(error)
-    }
-  })
-  // Dummy data for stats
   const statsData = [
     {
       title: 'Total Revenue',
@@ -251,7 +255,7 @@ export function Dashboard() {
               </div>
             </TabsContent>
           </Tabs>
-          <ChartLine />
+          <ChartLine data={customersData ? customersData : []} />
         </div>
       </div>
     </>

@@ -50,6 +50,7 @@ import { CreateCustomerDialog } from '@/components/Customers/CreateCustomerDialo
 import axios from '@/lib/axios'
 import useSWR, { mutate } from 'swr'
 import { UpdateCustomerDialog } from '@/components/Customers/UpdateCustomerDialog'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 // const data: Customer[] = [
 //   {
 //     id: 'm5gr84i9',
@@ -183,6 +184,13 @@ export const columns: ColumnDef<Customer>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const customer = row.original
+      const queryClient = useQueryClient()
+      const { mutateAsync: deleteCustomerMutation } = useMutation({
+        mutationFn: deleteCustomer,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['customers'] })
+        },
+      })
 
       return (
         <DropdownMenu>
@@ -199,7 +207,8 @@ export const columns: ColumnDef<Customer>[] = [
               Copy customer ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => deleteCustomer(customer.id)}>
+            <DropdownMenuItem
+              onClick={() => deleteCustomerMutation(customer.id)}>
               Delete customer
             </DropdownMenuItem>
 
@@ -252,13 +261,16 @@ const CustomersPage = () => {
   const baseUrl = `api/v1/customers?user_id=${user.id}`
   // const csrfToken = Cookies.get('XSRF-TOKEN')
 
-  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      return res.data.data as Customer[]
-    } catch (error: any) {
-      console.error(error)
-    }
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      try {
+        const res = await axios.get(baseUrl)
+        return res.data.data as Customer[]
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
   })
 
   // const fetchAllCustomers = async () => {
@@ -303,9 +315,9 @@ const CustomersPage = () => {
     <div className="flex-1 space-y-4 p-8 pt-6 ">
       <div className="w-full flex  justify-between space-x-4">
         <div className="w-full">
-          <ChartLine />
+          <ChartLine data={data ? data : []} />
         </div>
-        <DonutChart />
+        <DonutChart data={data ? data : []} />
       </div>
       <div className="w-full">
         <div className="flex items-center pb-4 gap-2">
