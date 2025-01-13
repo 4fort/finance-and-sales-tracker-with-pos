@@ -69,6 +69,7 @@ export function LoginPage() {
       await login({
         email: values.email,
         password: values.password,
+        remember: true,
       })
     } catch (error: Error | AxiosError | any) {
       if (axios.isAxiosError(error) && error.response?.status === 422) {

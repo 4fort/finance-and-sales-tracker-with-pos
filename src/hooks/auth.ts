@@ -23,7 +23,11 @@ export const useAuth = ({
       const res = await axios.get('/api/user')
       return res.data
     } catch (error: any) {
-      throw error
+      if (error.response?.status === 409) {
+        router.push('/verify-email')
+      } else {
+        throw error
+      }
     }
   })
 
@@ -38,20 +42,23 @@ export const useAuth = ({
     password_confirmation: string
   }) => {
     try {
-      // await csrf()
-      await axios.post('/api/v1/auth/register', data)
-      window.location.pathname = '/login'
-      // mutate()
+      await csrf()
+      await axios.post('/register', data)
+      mutate()
     } catch (error) {
       throw error
     }
   }
 
-  const login = async (data: { email: string; password: string }) => {
+  const login = async (data: {
+    email: string
+    password: string
+    remember: boolean
+  }) => {
     try {
-      // await csrf()
+      await csrf()
       await axios.post('/login', data)
-      // mutate()
+      mutate()
     } catch (error) {
       throw error
     }
