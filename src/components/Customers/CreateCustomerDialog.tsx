@@ -16,6 +16,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SubscriptionComboBox } from './SubscriptionComboBox'
 import axios from '@/lib/axios'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -29,6 +30,8 @@ const customerSchema = z.object({
 type CustomerFormValues = z.infer<typeof customerSchema>
 
 export function CreateCustomerDialog({ user_id }: { user_id: any }) {
+  const queryClient = useQueryClient()
+
   const {
     control,
     handleSubmit,
@@ -44,55 +47,31 @@ export function CreateCustomerDialog({ user_id }: { user_id: any }) {
       subscription_status: '', // Default value for the combobox
     },
   })
-  const {
-    data: user,
-    error,
-    mutate,
-    isLoading,
-  } = useSWR('/api/user', async () => {
-    try {
-      const res = await axios.get('/api/user')
-      return res.data
-    } catch (error: any) {
-      if (error.response?.status === 409) {
-        // router.push('/verify-email')
-      } else {
-        throw error
+
+  const { mutateAsync: createCustomerMutation } = useMutation({
+    mutationFn: async ({ customerData }: { customerData: any }) => {
+      try {
+        const csrf = async () => {
+          await axios.get('/sanctum/csrf-cookie')
+        }
+        const baseUrl = `/api/v1/customers`
+        await csrf()
+        await axios.post(baseUrl, customerData)
+        reset()
+      } catch (error) {
+        console.error(error)
       }
-    }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+    },
   })
   const onSubmit = async (data: CustomerFormValues) => {
     const customerData = {
       ...data,
       user_id: user_id, // Add user_id dynamically
     }
-    try {
-      const csrf = async () => {
-        await axios.get('/sanctum/csrf-cookie')
-      }
-      const baseUrl = `/api/v1/customers`
-
-      await csrf()
-      await axios.post(baseUrl, customerData)
-      //   mutate()
-      //   const response = await fetch(baseUrl, {
-      //     method: 'POST',
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //       // Add this if you're using authentication
-      //       // 'Authorization': 'Bearer your_token_here'
-      //     },
-      //     body: JSON.stringify(customerData),
-      //   })
-
-      //   if (!response.ok) {
-      //     throw new Error(`HTTP error! status: ${response.status}`)
-      //   }
-      reset()
-    } catch (error) {
-      console.error(error)
-    }
+    await createCustomerMutation({ customerData })
     // Reset the form after submission
   }
 

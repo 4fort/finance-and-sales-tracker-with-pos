@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/auth'
 import { CustomersComboBox } from './CustomersComboBox'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { OrderStatusComboBox } from './OrderStatusComboBox'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -32,6 +33,7 @@ const customerSchema = z.object({
 type OrderFormValues = z.infer<typeof customerSchema>
 
 export function CreateOrderDialog() {
+  const queryClient = useQueryClient()
   const { user } = useAuth({ middleware: 'auth' })
   const baseUrl = `api/v1/customers?user_id=${user.id}`
   // const csrfToken = Cookies.get('XSRF-TOKEN')
@@ -81,40 +83,54 @@ export function CreateOrderDialog() {
   //     }
   //   }
   // })
+  const { mutateAsync: createOrderMutation } = useMutation({
+    mutationFn: async (data: OrderFormValues) => {
+      const orderData = {
+        ...data,
+        user_id: user.id,
+        // Add user_id dynamically
+      }
+      try {
+        const csrf = async () => {
+          await axios.get('/sanctum/csrf-cookie')
+        }
+        const baseUrl = `/api/v1/orders`
+
+        await csrf()
+        await axios.post(baseUrl, orderData)
+        //   mutate()
+        //   const response = await fetch(baseUrl, {
+        //     method: 'POST',
+        //     headers: {
+        //       Accept: 'application/json',
+        //       'Content-Type': 'application/json',
+        //       // Add this if you're using authentication
+        //       // 'Authorization': 'Bearer your_token_here'
+        //     },
+        //     body: JSON.stringify(customerData),
+        //   })
+
+        //   if (!response.ok) {
+        //     throw new Error(`HTTP error! status: ${response.status}`)
+        //   }
+        reset()
+      } catch (error) {
+        console.error(error)
+      }
+      // Reset the form after submission
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
+    },
+  })
   const onSubmit = async (data: OrderFormValues) => {
     const orderData = {
       ...data,
       user_id: user.id,
       // Add user_id dynamically
     }
-    try {
-      const csrf = async () => {
-        await axios.get('/sanctum/csrf-cookie')
-      }
-      const baseUrl = `/api/v1/orders`
 
-      await csrf()
-      await axios.post(baseUrl, orderData)
-      //   mutate()
-      //   const response = await fetch(baseUrl, {
-      //     method: 'POST',
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //       // Add this if you're using authentication
-      //       // 'Authorization': 'Bearer your_token_here'
-      //     },
-      //     body: JSON.stringify(customerData),
-      //   })
-
-      //   if (!response.ok) {
-      //     throw new Error(`HTTP error! status: ${response.status}`)
-      //   }
-      reset()
-    } catch (error) {
-      console.error(error)
-    }
-    // Reset the form after submission
+    await createOrderMutation(orderData)
   }
 
   // Dummy function to generate user_id (replace with real implementation)

@@ -7,6 +7,7 @@ import useSWR from 'swr'
 import axios from '@/lib/axios'
 import { Customer } from '../customers/page'
 import { useAuth } from '@/hooks/auth'
+import { useQuery } from '@tanstack/react-query'
 // import { Customer } from '../customers/page'
 
 // export const metadata: Metadata = {
@@ -27,19 +28,22 @@ export default function OrdersPage() {
   const baseUrl = `api/v1/orders?user_id=${user.id}`
   // const csrfToken = Cookies.get('XSRF-TOKEN')
 
-  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      console.log(res.data.data)
-      return res.data.data as Orders[]
-    } catch (error: any) {
-      console.error(error)
-    }
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      try {
+        const res = await axios.get(baseUrl)
+        console.log(res.data.data)
+        return res.data.data as Orders[]
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
   })
 
   return (
     <div className="flex flex-col space-y-4 p-8 pt-6">
-      <OrderSummary />
+      <OrderSummary data={data ? data : []} />
       <div className="my-6 space-y-4">
         <OrdersTable orders={data ? data : []} />
       </div>

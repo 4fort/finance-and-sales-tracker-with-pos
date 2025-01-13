@@ -132,49 +132,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartLine() {
+export function ChartLine({ data }: { data: Customer[] }) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('active')
-  const { user } = useAuth({ middleware: 'auth' })
-  const baseUrl = `api/v1/customers?user_id=${user.id}`
   const [lineChartData, setLineChartData] = React.useState<any[] | unknown>()
-  const { data, error, mutate, isLoading } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      const activeCount = res.data.data.filter(
-        (body: Customer) => body.subscription_status === 'active',
-      ).length
-
-      // const groupedByDate = res.data.data.reduce((acc, user) => {
-      //   // Extract the date part only (YYYY-MM-DD)
-      //   const date = user.created_at.split('T')[0]
-
-      //   // Find or initialize the group for this date
-      //   if (!acc[date]) {
-      //     acc[date] = { created_at: date, active: 0, offline: 0 }
-      //   }
-
-      //   // Increment active or offline count based on user status
-      //   if (user.subscription_status === 'active') {
-      //     acc[date].active++
-      //   } else if (user.subscription_status === 'offline') {
-      //     acc[date].offline++
-      //   }
-
-      //   return acc
-      // }, {})
-
-      // // Step 2: Convert grouped data into the desired array structure
-      // const result = Object.values(groupedByDate)
-      // if (result) {
-      //   setLineChartData(result)
-      //   console.log(result)
-      // }
-      return res.data.data as Customer[]
-    } catch (error: any) {
-      console.error(error)
-    }
-  })
   const total = React.useMemo(
     () => ({
       active: data?.filter(
