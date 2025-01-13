@@ -41,8 +41,8 @@ const StatCard = ({
   icon,
 }: {
   title: string
-  value: number
-  change: number
+  value: string
+  change: string
   icon: React.ReactNode
 }) => (
   <Card>
@@ -95,15 +95,17 @@ export function Dashboard() {
     {
       title: 'Total Revenue',
       value:
-        '$ ' +
-        data
-          ?.filter(
-            order =>
-              order.order_status === 'delivered' ||
-              order.order_status === 'shipped' ||
-              order.order_status === 'processing',
-          )
-          .reduce((acc, curr) => acc + curr.total, 0),
+        '$ ' + data && data !== undefined
+          ? data
+              ?.filter(
+                order =>
+                  order.order_status === 'delivered' ||
+                  order.order_status === 'shipped' ||
+                  order.order_status === 'processing',
+              )
+              .reduce((acc, curr) => acc + curr.total, 0)
+              .toString()
+          : '',
       change: 'Total revenue of the company',
       icon: (
         <svg
@@ -121,7 +123,10 @@ export function Dashboard() {
     },
     {
       title: 'Subscribers',
-      value: customersData?.length,
+      value:
+        customersData && customersData !== undefined
+          ? customersData?.length.toString()
+          : '',
       change: 'Numbers of subscribed customers',
       icon: (
         <svg
@@ -142,10 +147,12 @@ export function Dashboard() {
     {
       title: 'Sales',
       value:
-        '$ ' +
-        data
-          ?.filter(order => order.order_status === 'delivered')
-          .reduce((acc, curr) => acc + curr.total, 0),
+        '$ ' + data && data !== undefined
+          ? data
+              .filter(order => order.order_status === 'delivered')
+              .reduce((acc, curr) => acc + curr.total, 0)
+              .toString()
+          : '',
       change: 'Amount of sales earned',
       icon: (
         <svg
@@ -164,9 +171,12 @@ export function Dashboard() {
     },
     {
       title: 'Active Now',
-      value: customersData?.filter(
-        customer => customer.subscription_status === 'active',
-      ).length,
+      value:
+        customersData && customersData !== undefined
+          ? customersData
+              .filter(customer => customer.subscription_status === 'active')
+              .length.toString()
+          : '',
       change: 'Numbers of active users',
       icon: (
         <svg
@@ -217,8 +227,6 @@ export function Dashboard() {
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {statsData.map((stat, index) => (
                   <StatCard
-                    orders={data ? data : []}
-                    customers={customersData ? customersData : []}
                     key={index}
                     title={stat.title}
                     value={stat.value}

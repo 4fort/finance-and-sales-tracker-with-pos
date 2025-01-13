@@ -1,9 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Package, RefreshCcw, Truck } from 'lucide-react'
 import { Orders } from './page'
-import { useAuth } from '@/hooks/auth'
-import useSWR from 'swr'
-import axios from '@/lib/axios'
 
 export function OrderSummary({ data }: { data: Orders[] }) {
   const summaryItems = [

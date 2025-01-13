@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -81,7 +81,7 @@ export function OrdersTable({ orders }: { orders: Orders[] }) {
       const lowercasedSearch = searchTerm.toLowerCase()
       const filtered = orders?.filter(
         order =>
-          order.id === lowercasedSearch ||
+          order.id.toString() === lowercasedSearch ||
           order.relationship.customer.first_name
             .toLowerCase()
             .includes(lowercasedSearch) ||
