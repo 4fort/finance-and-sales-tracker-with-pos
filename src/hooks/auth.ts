@@ -42,7 +42,7 @@ export const useAuth = ({
     password_confirmation: string
   }) => {
     try {
-      await csrf()
+      // await csrf()
       await axios.post('/register', data)
       mutate()
     } catch (error) {
