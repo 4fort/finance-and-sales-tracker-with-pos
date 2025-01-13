@@ -81,7 +81,7 @@ export function OrdersTable({ orders }: { orders: Orders[] }) {
       const lowercasedSearch = searchTerm.toLowerCase()
       const filtered = orders?.filter(
         order =>
-          order.id === lowercasedSearch ||
+          order.id.toString() === lowercasedSearch ||
           order.relationship.customer.first_name
             .toLowerCase()
             .includes(lowercasedSearch) ||
