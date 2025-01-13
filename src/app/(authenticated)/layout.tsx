@@ -1,7 +1,6 @@
 'use client'
 import { ReactNode, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/auth'
-import Navigation from '@/components/Layouts/Navigation'
 import { Loader2 } from 'lucide-react'
 import { TeamSwitcher } from '@/components/Dashboard/team-switcher'
 import { MainNav } from '@/components/Dashboard/main-nav'

@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import Cookies from 'js-cookie'
 
 import {
   CaretSortIcon,
@@ -42,13 +41,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import DonutChart from '@/components/donut-charts'
-import CustomBarChart from '@/components/charts'
 import { ChartLine } from '@/components/chart-line-interactive'
-import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/auth'
 import { CreateCustomerDialog } from '@/components/Customers/CreateCustomerDialog'
 import axios from '@/lib/axios'
-import useSWR, { mutate } from 'swr'
 import { UpdateCustomerDialog } from '@/components/Customers/UpdateCustomerDialog'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 // const data: Customer[] = [
@@ -95,6 +91,7 @@ export type Customer = {
   created_at: string
   first_name: string
   last_name: string
+  id: number
 }
 
 const deleteCustomer = async (customerId: number) => {
@@ -219,7 +216,9 @@ const CustomersPage = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(customer.id)}>
+                onClick={() =>
+                  navigator.clipboard.writeText(customer.id.toString())
+                }>
                 Copy customer ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />

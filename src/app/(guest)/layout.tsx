@@ -1,5 +1,3 @@
-import { Header } from '@/components/LandingPage/Header'
-import { useAuth } from '@/hooks/auth'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
 

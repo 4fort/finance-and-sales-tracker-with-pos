@@ -9,8 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Order } from '@/types/User'
-import { MoreHorizontal, Eye, Edit, Trash, Send } from 'lucide-react'
+import { MoreHorizontal, Edit, Trash } from 'lucide-react'
 import { Orders } from './page'
 import { UpdateOrderDialog } from '@/components/Orders/UpdateOrderDialog'
 import { useState } from 'react'
@@ -56,7 +55,7 @@ export function OrderActions({ order }: { order: Orders }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={() => navigator.clipboard.writeText(order.id)}>
+          onClick={() => navigator.clipboard.writeText(order.id.toString())}>
           Copy Order ID
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -67,7 +66,7 @@ export function OrderActions({ order }: { order: Orders }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-red-600"
-          onClick={deleteOrderMutation}>
+          onClick={async () => await deleteOrderMutation()}>
           <Trash className="mr-2 h-4 w-4" />
           Delete order
         </DropdownMenuItem>
