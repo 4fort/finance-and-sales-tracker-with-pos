@@ -135,7 +135,7 @@ const chartConfig = {
 export function ChartLine({ data }: { data: Customer[] }) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('active')
-  const [lineChartData, setLineChartData] = React.useState<any[] | unknown>()
+  const [lineChartData, setLineChartData] = React.useState<any[] | undefined>()
   const total = React.useMemo(
     () => ({
       active: data?.filter(
@@ -147,27 +147,37 @@ export function ChartLine({ data }: { data: Customer[] }) {
     }),
     [data],
   )
-
   useEffect(() => {
     if (data) {
-      const groupedByDate = data.reduce((acc, user) => {
-        const date = user.created_at.split('T')[0]
+      const groupedByDate = data.reduce(
+        (
+          acc: Record<
+            string,
+            { created_at: string; active: number; offline: number }
+          >,
+          user,
+        ) => {
+          const date = user.created_at.split('T')[0] // Extract date portion of created_at
 
-        if (!acc[date]) {
-          acc[date] = { created_at: date, active: 0, offline: 0 }
-        }
+          // Initialize the date object if it doesn't exist
+          if (!acc[date]) {
+            acc[date] = { created_at: date, active: 0, offline: 0 }
+          }
 
-        if (user.subscription_status === 'active') {
-          acc[date].active++
-        } else if (user.subscription_status === 'offline') {
-          acc[date].offline++
-        }
+          // Update counts based on subscription status
+          if (user.subscription_status === 'active') {
+            acc[date].active++
+          } else if (user.subscription_status === 'offline') {
+            acc[date].offline++
+          }
 
-        return acc
-      }, {})
+          return acc
+        },
+        {},
+      )
 
+      // Convert the object to an array and set it as chart data
       const result = Object.values(groupedByDate)
-
       setLineChartData(result)
       console.log(lineChartData)
     }
