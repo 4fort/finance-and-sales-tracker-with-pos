@@ -106,7 +106,7 @@ export function UpdateCustomerDialog({
         <DialogHeader>
           <DialogTitle>Update Customer Info</DialogTitle>
           <DialogDescription>
-            Update customer info here. Click submit when you're done.
+            Update customer info here. Click submit when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">

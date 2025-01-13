@@ -132,7 +132,7 @@ export function UpdateOrderDialog({
         <DialogHeader>
           <DialogTitle>Update Order</DialogTitle>
           <DialogDescription>
-            Update your order here. Click submit when you're done.
+            Update your order here. Click submit when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
