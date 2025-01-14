@@ -14,13 +14,13 @@ export async function middleware(req: NextRequest) {
 
   if (session) {
     // Prevent accessing login or register pages if user is authenticated
-    if (['/login', '/register'].includes(urlPath)) {
+    if (['/login', '/register', '/'].includes(urlPath)) {
       console.log('Redirecting authenticated user away from login or register')
       return NextResponse.redirect(new URL('/dashboard', req.url)) // Redirect to home or dashboard
     }
   } else {
     // Redirect unauthenticated users to login if accessing protected routes
-    if (!['/login', '/register'].includes(urlPath)) {
+    if (!['/login', '/register', '/'].includes(urlPath)) {
       console.log('Redirecting unauthenticated user to login')
       return NextResponse.redirect(new URL('/login', req.url))
     }
