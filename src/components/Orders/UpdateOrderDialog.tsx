@@ -124,17 +124,19 @@ export function UpdateOrderDialog({
   //   }
   // })
   const { mutateAsync: updateCustomerMutation } = useMutation({
-    mutationFn: async (data: OrderFormValues) => {
+    mutationFn: async (mutateData: OrderFormValues) => {
       try {
-        const csrf = async () => {
-          await axios.get('/sanctum/csrf-cookie')
+        const { error, data } = await supabase
+          .from('orders')
+          .update(mutateData)
+          .eq('id', order.id)
+        if (error) {
+          console.error(error)
         }
-        console.log('id', order.id)
-        const baseUrl = `/api/v1/orders/${order.id}}`
 
-        await csrf()
-        const res = await axios.patch(baseUrl, { ...data, id: order.id })
-        console.log(res)
+        if (data) {
+          console.log('response update data: ', data)
+        }
         reset()
       } catch (error) {
         console.error(error)
