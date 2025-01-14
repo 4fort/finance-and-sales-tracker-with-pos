@@ -20,8 +20,8 @@ export const useAuth = ({
     isLoading,
   } = useSWR('/api/user', async () => {
     try {
-      const res = await axios.get('/api/user')
-      return res.data
+      // const res = await axios.get('/api/user')
+      // return res.data
     } catch (error: any) {
       if (error.response?.status === 409) {
         router.push('/verify-email')
@@ -116,7 +116,6 @@ export const useAuth = ({
 
       if (
         window.location.pathname === '/verify-email' &&
-        user?.email_verified_at &&
         redirectIfAuthenticated
       ) {
         router.push(redirectIfAuthenticated)

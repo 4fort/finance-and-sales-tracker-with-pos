@@ -26,6 +26,7 @@ import axios from '@/lib/axios'
 import { Orders } from '@/app/(authenticated)/orders/page'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 // Metadata for the dashboard page
 export const metadata: Metadata = {
@@ -58,23 +59,68 @@ const StatCard = ({
 )
 
 export function Dashboard() {
-  const { user } = useAuth({ middleware: 'auth' })
-  const ordersBaseUrl = `api/v1/orders?user_id=${user.id}`
-  const customersbaseUrl = `api/v1/customers?user_id=${user.id}`
+  // const { user } = useAuth({ middleware: 'auth' })
+  // const ordersBaseUrl = `api/v1/orders?user_id=${user?.id}`
+  // const customersbaseUrl = `api/v1/customers?user_id=${user?.id}`
 
-  const { isPending, error, data } = useQuery({
-    queryKey: ['orders'],
+  // const { isPending, error, data } = useQuery({
+  //   queryKey: ['orders'],
+  //   queryFn: async () => {
+  //     try {
+  //       const res = await axios.get(ordersBaseUrl)
+  //       console.log(res.data.data)
+  //       return res.data.data as Orders[]
+  //     } catch (error: any) {
+  //       console.error(error)
+  //     }
+  //   },
+  // })
+
+  const {
+    isPending,
+    error: userError,
+    data: user,
+  } = useQuery({
+    queryKey: ['user'],
     queryFn: async () => {
       try {
-        const res = await axios.get(ordersBaseUrl)
-        console.log(res.data.data)
-        return res.data.data as Orders[]
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
       } catch (error: any) {
         console.error(error)
       }
     },
   })
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select(
+            'id,total,order_status,items, customers!orders_customer_id_fkey (email, first_name, last_name)',
+          )
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('order data', data)
+          return data as any[]
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
+  })
   const {
     data: customersData,
     error: customersError,
@@ -83,14 +129,26 @@ export function Dashboard() {
     queryKey: ['customers'],
     queryFn: async () => {
       try {
-        const res = await axios.get(customersbaseUrl)
-        return res.data.data as Customer[]
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log(data)
+          return data as Customer[]
+        }
       } catch (error: any) {
         console.error(error)
       }
     },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
   })
 
+  // const data = []
+  // const customersData = []
   const statsData = [
     {
       title: 'Total Revenue',

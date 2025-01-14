@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { SubscriptionComboBox } from './SubscriptionComboBox'
 import axios from '@/lib/axios'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -51,12 +52,13 @@ export function CreateCustomerDialog({ user_id }: { user_id: any }) {
   const { mutateAsync: createCustomerMutation } = useMutation({
     mutationFn: async ({ customerData }: { customerData: any }) => {
       try {
-        const csrf = async () => {
-          await axios.get('/sanctum/csrf-cookie')
+        const { data, error } = await supabase
+          .from('customers')
+          .insert(customerData)
+        if (error) {
+          console.error(error)
+          return
         }
-        const baseUrl = `/api/v1/customers`
-        await csrf()
-        await axios.post(baseUrl, customerData)
         reset()
       } catch (error) {
         console.error(error)

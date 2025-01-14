@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Customer } from '@/app/(authenticated)/customers/page'
+import { useEffect } from 'react'
 
 // const frameworks = [
 //   {
@@ -31,8 +32,8 @@ import { Customer } from '@/app/(authenticated)/customers/page'
 //   },
 // ]
 type SubscriptionComboBoxProps = {
-  value: number
-  onChange: (value: number) => void
+  value: string
+  onChange: (value: string) => void
   customerData: Customer[]
 }
 
@@ -43,6 +44,9 @@ export function CustomersComboBox({
 }: SubscriptionComboBoxProps) {
   const [open, setOpen] = React.useState(false)
 
+  useEffect(() => {
+    if (customerData) console.log('combo box data', customerData)
+  }, [customerData])
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -67,11 +71,10 @@ export function CustomersComboBox({
               {customerData.map(customer => (
                 <CommandItem
                   key={customer.id}
-                  value={customer.id.toString()}
+                  value={customer.id}
                   onSelect={currentValue => {
-                    const newValue =
-                      parseInt(currentValue) === value ? '' : currentValue
-                    onChange(parseInt(newValue))
+                    const newValue = currentValue === value ? '' : currentValue
+                    onChange(newValue)
                     setOpen(false)
                   }}>
                   {customer.email}

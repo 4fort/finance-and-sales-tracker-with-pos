@@ -19,14 +19,15 @@ import { useAuth } from '@/hooks/auth'
 import { CustomersComboBox } from './CustomersComboBox'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { OrderStatusComboBox } from './OrderStatusComboBox'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
   items: z.coerce.number(),
   order_status: z.string().min(1, 'Order status is required'),
   total: z.coerce.number(),
-  customer_id: z.number().min(1, 'Customer is required'),
+  customer_id: z.string().min(1, 'Customer is required'),
 })
 
 // Infer the TypeScript type from the schema
@@ -34,23 +35,8 @@ type OrderFormValues = z.infer<typeof customerSchema>
 
 export function CreateOrderDialog() {
   const queryClient = useQueryClient()
-  const { user } = useAuth({ middleware: 'auth' })
-  const baseUrl = `api/v1/customers?user_id=${user.id}`
   // const csrfToken = Cookies.get('XSRF-TOKEN')
 
-  const {
-    data: customerData,
-    error,
-    mutate,
-    isLoading,
-  } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      return res.data.data as Customer[]
-    } catch (error: any) {
-      console.error(error)
-    }
-  })
   const {
     control,
     handleSubmit,
@@ -63,56 +49,68 @@ export function CreateOrderDialog() {
       items: 0,
       order_status: '',
       total: 0,
-      customer_id: 0,
+      customer_id: '',
     },
   })
-  // const {
-  //   data: user,
-  //   error,
-  //   mutate,
-  //   isLoading,
-  // } = useSWR('/api/user', async () => {
-  //   try {
-  //     const res = await axios.get('/api/user')
-  //     return res.data
-  //   } catch (error: any) {
-  //     if (error.response?.status === 409) {
-  //       // router.push('/verify-email')
-  //     } else {
-  //       throw error
-  //     }
-  //   }
-  // })
+  const {
+    isPending,
+    error: userError,
+    data: user,
+  } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
+  const {
+    data: customerData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log(data)
+          return data as Customer[]
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
+  })
   const { mutateAsync: createOrderMutation } = useMutation({
     mutationFn: async (data: OrderFormValues) => {
       const orderData = {
         ...data,
-        user_id: user.id,
+        user_id: user?.user?.id,
         // Add user_id dynamically
       }
       try {
-        const csrf = async () => {
-          await axios.get('/sanctum/csrf-cookie')
+        const { data, error } = await supabase.from('orders').insert(orderData)
+        if (error) {
+          console.error(error)
+          return
         }
-        const baseUrl = `/api/v1/orders`
-
-        await csrf()
-        await axios.post(baseUrl, orderData)
-        //   mutate()
-        //   const response = await fetch(baseUrl, {
-        //     method: 'POST',
-        //     headers: {
-        //       Accept: 'application/json',
-        //       'Content-Type': 'application/json',
-        //       // Add this if you're using authentication
-        //       // 'Authorization': 'Bearer your_token_here'
-        //     },
-        //     body: JSON.stringify(customerData),
-        //   })
-
-        //   if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`)
-        //   }
         reset()
       } catch (error) {
         console.error(error)
@@ -126,7 +124,7 @@ export function CreateOrderDialog() {
   const onSubmit = async (data: OrderFormValues) => {
     const orderData = {
       ...data,
-      user_id: user.id,
+      user_id: user?.user?.id,
       // Add user_id dynamically
     }
 
@@ -134,7 +132,6 @@ export function CreateOrderDialog() {
   }
 
   // Dummy function to generate user_id (replace with real implementation)
-  const generateUserId = () => Math.floor(Math.random() * 10000)
 
   return (
     <Dialog onOpenChange={() => reset()}>

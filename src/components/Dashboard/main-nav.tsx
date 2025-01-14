@@ -40,7 +40,7 @@ export function MainNav({
         }`}>
         Products
       </Link> */}
-      <Link
+      {/* <Link
         href="/settings"
         className={`text-sm font-medium transition-colors hover:text-primary ${
           pathname === '/settings' || pathname === '/settings/account'
@@ -48,7 +48,7 @@ export function MainNav({
             : 'text-muted-foreground'
         }`}>
         Settings
-      </Link>
+      </Link> */}
     </nav>
   )
 }
