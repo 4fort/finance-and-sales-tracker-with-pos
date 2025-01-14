@@ -34,7 +34,7 @@ export function UpdateCustomerDialog({
   customerId,
   customer,
 }: {
-  customerId: number
+  customerId: string
   customer: Customer
 }) {
   const {
