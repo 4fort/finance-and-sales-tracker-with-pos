@@ -18,6 +18,7 @@ import { SubscriptionComboBox } from './SubscriptionComboBox'
 import axios from '@/lib/axios'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
@@ -55,30 +56,21 @@ export function UpdateCustomerDialog({
   })
   const queryClient = useQueryClient()
   const { mutateAsync: updateCustomerMutation } = useMutation({
-    mutationFn: async (data: CustomerFormValues) => {
+    mutationFn: async (mutateData: CustomerFormValues) => {
+      console.log('mutate data: ', mutateData)
+      console.log(customerId)
       try {
-        const csrf = async () => {
-          await axios.get('/sanctum/csrf-cookie')
+        const { error, data } = await supabase
+          .from('customers')
+          .update(mutateData)
+          .eq('id', customerId)
+        if (error) {
+          console.error(error)
         }
-        const baseUrl = `/api/v1/customers/${customerId}`
 
-        await csrf()
-        await axios.patch(baseUrl, data)
-        //   mutate()
-        //   const response = await fetch(baseUrl, {
-        //     method: 'POST',
-        //     headers: {
-        //       Accept: 'application/json',
-        //       'Content-Type': 'application/json',
-        //       // Add this if you're using authentication
-        //       // 'Authorization': 'Bearer your_token_here'
-        //     },
-        //     body: JSON.stringify(customerData),
-        //   })
-
-        //   if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`)
-        //   }
+        if (data) {
+          console.log('response update data: ', data)
+        }
         reset()
       } catch (error) {
         console.error(error)
@@ -90,7 +82,7 @@ export function UpdateCustomerDialog({
     },
   })
   const onSubmit = async (data: CustomerFormValues) => {
-    await updateCustomerMutation({ ...data })
+    await updateCustomerMutation(data)
   }
 
   // Dummy function to generate user_id (replace with real implementation)
