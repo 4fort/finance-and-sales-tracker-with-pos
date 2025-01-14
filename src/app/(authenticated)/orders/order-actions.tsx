@@ -15,18 +15,12 @@ import { UpdateOrderDialog } from '@/components/Orders/UpdateOrderDialog'
 import { useState } from 'react'
 import axios from '@/lib/axios'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 export function OrderActions({ order }: { order: Orders }) {
   const deleteOrder = async () => {
     try {
-      const csrf = async () => {
-        await axios.get('/sanctum/csrf-cookie')
-      }
-      const baseUrl = `/api/v1/orders/delete?order_id=${order.id}}`
-
-      await csrf()
-      const res = await axios.delete(baseUrl)
-      console.log(res)
+      const response = await supabase.from('orders').delete().eq('id', order.id)
     } catch (error) {
       console.error(error)
     }
