@@ -3,30 +3,63 @@
 import { Orders } from '@/app/(authenticated)/orders/page'
 import { useAuth } from '@/hooks/auth'
 import axios from '@/lib/axios'
+import { supabase } from '@/lib/supabase'
+import { useQuery } from '@tanstack/react-query'
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import useSWR from 'swr'
 
 export function Overview() {
-  const { user } = useAuth({ middleware: 'auth' })
-  const baseUrl = `api/v1/orders?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
+  const {
+    isPending,
+    error: userError,
+    data: user,
+  } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
 
   const {
     data: orderData,
     error,
-    mutate,
     isLoading,
-  } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      console.log(res.data.data)
-      return res.data.data as Orders[]
-    } catch (error: any) {
-      console.error(error)
-    }
+  } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select(
+            'id,total,order_status,items, created_at, customers!orders_customer_id_fkey  (email, first_name, last_name)',
+          )
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('order data', data)
+          return data as any[]
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
   })
 
-  const orders = orderData || [] // Fallback if `orderData` is undefined
+  const orders = (orderData as Orders[]) || []
 
   // Create a mapping from month names to their respective indices
   const months = {

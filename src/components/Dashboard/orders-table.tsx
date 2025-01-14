@@ -82,15 +82,9 @@ export function OrdersTable({ orders }: { orders: Orders[] }) {
       const filtered = orders?.filter(
         order =>
           order.id.toString() === lowercasedSearch ||
-          order.relationship.customer.first_name
-            .toLowerCase()
-            .includes(lowercasedSearch) ||
-          order.relationship.customer.last_name
-            .toLowerCase()
-            .includes(lowercasedSearch) ||
-          order.relationship.customer.email
-            .toLowerCase()
-            .includes(lowercasedSearch) ||
+          order.customers.first_name.toLowerCase().includes(lowercasedSearch) ||
+          order.customers.last_name.toLowerCase().includes(lowercasedSearch) ||
+          order.customers.email.toLowerCase().includes(lowercasedSearch) ||
           order.order_status.toLowerCase().includes(lowercasedSearch),
       )
       setFilteredOrders(filtered)
@@ -126,13 +120,13 @@ export function OrdersTable({ orders }: { orders: Orders[] }) {
                 <TableRow key={order.id}>
                   {visibleColumns.full_name && (
                     <TableCell>
-                      {order.relationship.customer.first_name +
+                      {order.customers.first_name +
                         ' ' +
-                        order.relationship.customer.last_name}
+                        order.customers.last_name}
                     </TableCell>
                   )}
                   {visibleColumns.email && (
-                    <TableCell>{order.relationship.customer.email}</TableCell>
+                    <TableCell>{order.customers.email}</TableCell>
                   )}
                   {visibleColumns.created_at && (
                     <TableCell>

@@ -20,14 +20,15 @@ import { CustomersComboBox } from './CustomersComboBox'
 import { Customer } from '@/app/(authenticated)/customers/page'
 import { OrderStatusComboBox } from './OrderStatusComboBox'
 import { Orders } from '@/app/(authenticated)/orders/page'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 // Define the Zod schema (without user_id)
 const customerSchema = z.object({
   items: z.coerce.number(),
   order_status: z.string().min(1, 'Order status is required'),
   total: z.coerce.number(),
-  customer_id: z.number().min(1, 'Customer is required'),
+  customer_id: z.string().min(1, 'Customer is required'),
 })
 
 // Infer the TypeScript type from the schema
@@ -43,22 +44,52 @@ export function UpdateOrderDialog({
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const queryClient = useQueryClient()
-  const { user } = useAuth({ middleware: 'auth' })
-  const baseUrl = `api/v1/customers?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
+  const {
+    isPending,
+    error: userError,
+    data: user,
+  } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
 
   const {
     data: customerData,
     error,
-    mutate,
     isLoading,
-  } = useSWR(baseUrl, async () => {
-    try {
-      const res = await axios.get(baseUrl)
-      return res.data.data as Customer[]
-    } catch (error: any) {
-      console.error(error)
-    }
+  } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log(data)
+          return data as Customer[]
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
   })
   const {
     control,
@@ -72,7 +103,7 @@ export function UpdateOrderDialog({
       items: order.items,
       order_status: order.order_status,
       total: order.total,
-      customer_id: order.relationship.customer.id,
+      customer_id: order.customers.id,
     },
   })
   // const {

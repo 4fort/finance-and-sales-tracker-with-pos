@@ -43,6 +43,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/hooks/auth'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 
 type Team = {
   value: string
@@ -54,7 +56,25 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
 export function TeamSwitcher({ className }: TeamSwitcherProps) {
-  const { user } = useAuth({ middleware: 'auth' })
+  // const { user } = useAuth({ middleware: 'auth' })
+  const { isPending, error, data } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
+
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
   const groups = [
@@ -62,7 +82,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
       label: 'Personal Account',
       teams: [
         {
-          label: user?.name,
+          label: data?.user?.email,
           value: 'personal',
         },
       ],
@@ -81,9 +101,6 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
     //   ],
     // },
   ]
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0],
-  )
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -97,13 +114,12 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
             className={cn('w-[200px] justify-between', className)}>
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
+                src={`https://avatar.vercel.sh/${data?.user?.email}.png`}
                 className="grayscale"
               />
-              <AvatarFallback>SC</AvatarFallback>
+              {/* <AvatarFallback>SC</AvatarFallback> */}
             </Avatar>
-            {selectedTeam.label}
+            {data?.user?.email}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -118,7 +134,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
-                        setSelectedTeam(team)
+                        // setSelectedTeam(team)
                         setOpen(false)
                       }}
                       className="text-sm">
@@ -128,17 +144,9 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
                           alt={team.label}
                           className="grayscale"
                         />
-                        <AvatarFallback>SC</AvatarFallback>
+                        {/* <AvatarFallback>SC</AvatarFallback> */}
                       </Avatar>
                       {team.label}
-                      <CheckIcon
-                        className={cn(
-                          'ml-auto h-4 w-4',
-                          selectedTeam.value === team.value
-                            ? 'opacity-100'
-                            : 'opacity-0',
-                        )}
-                      />
                     </CommandItem>
                   ))}
                 </CommandGroup>

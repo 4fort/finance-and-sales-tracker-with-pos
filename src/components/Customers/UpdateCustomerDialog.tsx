@@ -49,7 +49,8 @@ export function UpdateCustomerDialog({
       email: customer.email,
       first_name: customer.first_name,
       last_name: customer.last_name,
-      subscription_status: customer.subscription_status, // Default value for the combobox
+      subscription_status: customer.subscription_status,
+      // customer_data: customer.id, // Default value for the combobox
     },
   })
   const queryClient = useQueryClient()

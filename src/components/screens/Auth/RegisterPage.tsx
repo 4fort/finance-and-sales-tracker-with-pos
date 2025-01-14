@@ -6,7 +6,10 @@ import { useAuth } from '@/hooks/auth'
 import styles from '../Auth/registerPage.module.css'
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+import { supabase } from '@/lib/supabase'
+// import { createClient } from '@/lib/supabase'
 
 interface Values {
   name: string
@@ -30,11 +33,30 @@ export function RegisterPage() {
     { setSubmitting, setErrors }: FormikHelpers<Values>,
   ): Promise<any> => {
     try {
-      await register(values)
-    } catch (error: Error | AxiosError | any) {
-      if (axios.isAxiosError(error) && error.response?.status === 422) {
-        setErrors(error.response?.data?.errors)
+      // const supabase = createClient()
+
+      // type-casting here for convenience
+      // in practice, you should validate your inputs
+
+      const { error, data } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            name: values.name,
+          },
+        },
+      })
+
+      if (error) {
+        redirect('/error')
       }
+
+      if (data) {
+        window.location.reload()
+      }
+    } catch (error: any) {
+      console.error(error)
     } finally {
       setSubmitting(false)
     }

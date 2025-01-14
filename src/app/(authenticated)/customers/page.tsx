@@ -47,6 +47,7 @@ import { CreateCustomerDialog } from '@/components/Customers/CreateCustomerDialo
 import axios from '@/lib/axios'
 import { UpdateCustomerDialog } from '@/components/Customers/UpdateCustomerDialog'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 // const data: Customer[] = [
 //   {
 //     id: 'm5gr84i9',
@@ -91,7 +92,7 @@ export type Customer = {
   created_at: string
   first_name: string
   last_name: string
-  id: number
+  id: string
 }
 
 const deleteCustomer = async (customerId: number) => {
@@ -250,7 +251,6 @@ const CustomersPage = () => {
   //   setCookies(myCookie)
   // }, [])
 
-  const { user } = useAuth({ middleware: 'auth' })
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -259,19 +259,48 @@ const CustomersPage = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const baseUrl = `api/v1/customers?user_id=${user.id}`
-  // const csrfToken = Cookies.get('XSRF-TOKEN')
+  const {
+    isPending,
+    error: userError,
+    data: user,
+  } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
 
   const { data, error, isLoading } = useQuery({
     queryKey: ['customers'],
     queryFn: async () => {
       try {
-        const res = await axios.get(baseUrl)
-        return res.data.data as Customer[]
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('user_id', user?.user?.id)
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log(data)
+          return data as Customer[]
+        }
       } catch (error: any) {
         console.error(error)
       }
     },
+    enabled: !!user?.user?.id, // Only run this query if the user ID is available
   })
 
   // const fetchAllCustomers = async () => {
@@ -330,7 +359,9 @@ const CustomersPage = () => {
             }
             className="max-w-sm bg-white"
           />
-          <CreateCustomerDialog user_id={user.id ? user.id : null} />
+          <CreateCustomerDialog
+            user_id={user?.user?.id ? user.user.id : null}
+          />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
