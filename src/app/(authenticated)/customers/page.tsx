@@ -95,7 +95,7 @@ export type Customer = {
   id: string
 }
 
-const deleteCustomer = async (customerId: number) => {
+const deleteCustomer = async (customerId: string) => {
   try {
     const csrf = async () => {
       await axios.get('/sanctum/csrf-cookie')
