@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/auth'
 // import loginImage from '../../../../public/'
 import styles from '../Auth/loginPage.module.css'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 const formSchema = z.object({
   email: z.string().min(1, {
@@ -66,11 +67,15 @@ export function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
     try {
-      await login({
+      const { error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
-        remember: true,
       })
+      if (error) {
+        console.error(error)
+      }
+
+      window.location.reload()
     } catch (error: Error | AxiosError | any) {
       if (axios.isAxiosError(error) && error.response?.status === 422) {
         const dbErrors = error.response?.data?.errors
