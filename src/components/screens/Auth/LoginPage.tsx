@@ -26,6 +26,8 @@ import { useAuth } from '@/hooks/auth'
 import styles from '../Auth/loginPage.module.css'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { ToastAction } from '@/components/ui/toast'
+import { useToast } from '@/hooks/use-toast'
 
 const formSchema = z.object({
   email: z.string().min(1, {
@@ -52,6 +54,7 @@ export function LoginPage() {
   })
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<string>('')
+  const { toast } = useToast()
 
   const { login } = useAuth({
     middleware: 'guest',
@@ -72,27 +75,24 @@ export function LoginPage() {
         password: values.password,
       })
       if (error) {
-        console.error(error)
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: error.message,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        })
+        return
       }
 
       window.location.reload()
     } catch (error: Error | AxiosError | any) {
-      if (axios.isAxiosError(error) && error.response?.status === 422) {
-        const dbErrors = error.response?.data?.errors
-        if (dbErrors) {
-          Object.keys(dbErrors).forEach(field => {
-            form.setError(field as keyof typeof values, {
-              type: 'manual',
-              message: dbErrors[field][0], // Assuming the error message is an array
-            })
-          })
-        } else {
-          form.setError('email', {
-            type: 'manual',
-            message: 'Something went wrong. Please try again.',
-          })
-        }
-      }
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: error.message,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
+      return
     } finally {
       setStatus('')
     }

@@ -9,6 +9,9 @@ import * as Yup from 'yup'
 import { redirect, useRouter } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
+import { ErrorToast } from '@/components/ErrorToast'
+import { useToast } from '@/hooks/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 // import { createClient } from '@/lib/supabase'
 
 interface Values {
@@ -22,6 +25,7 @@ export const description =
   "A login page with two columns. The first column has the login form with email and password. There's a Forgot your passwork link and a link to sign up if you do not have an account. The second column has a cover image."
 
 export function RegisterPage() {
+  const { toast } = useToast()
   const router = useRouter()
   const { register } = useAuth({
     middleware: 'guest',
@@ -49,13 +53,25 @@ export function RegisterPage() {
       })
 
       if (error) {
-        redirect('/error')
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: error.message,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        })
+        return
       }
 
       if (data) {
         window.location.reload()
       }
     } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: error,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
       console.error(error)
     } finally {
       setSubmitting(false)

@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/toaster'
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
 
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunito.className} text-gray-900 antialiased`}>
+        <Toaster />
         {children}
       </body>
     </html>
