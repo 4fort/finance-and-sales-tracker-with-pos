@@ -97,12 +97,10 @@ export type Customer = {
 
 const deleteCustomer = async (customerId: string) => {
   try {
-    const csrf = async () => {
-      await axios.get('/sanctum/csrf-cookie')
-    }
-    const baseUrl = `/api/v1/customers/${customerId}`
-    await csrf()
-    await axios.delete(baseUrl)
+    const response = await supabase
+      .from('customers')
+      .delete()
+      .eq('id', customerId)
   } catch (error) {
     console.error(error)
   }
