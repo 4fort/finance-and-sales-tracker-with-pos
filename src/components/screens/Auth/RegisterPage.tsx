@@ -48,11 +48,16 @@ export function RegisterPage() {
         options: {
           data: {
             name: values.name,
+            profile: {
+              username: values.name,
+              bio: '',
+            },
           },
         },
       })
 
       if (error) {
+        console.error(error)
         toast({
           variant: 'destructive',
           title: 'Uh oh! Something went wrong.',
