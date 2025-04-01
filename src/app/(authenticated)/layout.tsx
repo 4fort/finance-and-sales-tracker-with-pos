@@ -6,6 +6,7 @@ import { TeamSwitcher } from '@/components/Dashboard/team-switcher'
 import { MainNav } from '@/components/Dashboard/main-nav'
 import { Search } from '@/components/Dashboard/search'
 import { UserNav } from '@/components/Dashboard/user-nav'
+import { Toaster } from '@/components/ui/toaster'
 
 const AppLayout = ({ children }: { children: ReactNode }) => {
   // const { user } = useAuth({ middleware: 'auth' })
@@ -24,6 +25,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
   // }
   return (
     <div className="min-h-screen bg-gray-100 ">
+      <Toaster />
       {/* Page Content */}
       <main>
         <div className="border-b bg-white">

@@ -33,17 +33,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { supabase } from '@/lib/supabase'
+import { useEffect } from 'react'
+import { toast } from '@/hooks/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
-const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'French', value: 'fr' },
-  { label: 'German', value: 'de' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
-  { label: 'Russian', value: 'ru' },
-  { label: 'Japanese', value: 'ja' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Chinese', value: 'zh' },
+const role = [
+  { label: 'Super Admin', value: 'super-admin' },
+  { label: 'Admin', value: 'admin' },
 ] as const
 
 const accountFormSchema = z.object({
@@ -58,7 +55,7 @@ const accountFormSchema = z.object({
   dob: z.date({
     required_error: 'A date of birth is required.',
   }),
-  language: z.string({
+  role: z.string({
     required_error: 'Please select a language.',
   }),
 })
@@ -68,24 +65,67 @@ type AccountFormValues = z.infer<typeof accountFormSchema>
 // This can come from your database or API.
 const defaultValues: Partial<AccountFormValues> = {
   // name: "Your name",
-  // dob: new Date("2023-01-23"),
+  dob: new Date(),
 }
 
 export function AccountForm() {
+  const getUser = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+      if (error) {
+        throw error.message
+      }
+      if (user) {
+        // console.log(user)
+        // setUser(user)
+
+        form.reset({
+          name: user.user_metadata.name,
+          dob: user.user_metadata.profile.dob
+            ? new Date(user.user_metadata.profile.dob)
+            : new Date(),
+          role: user.user_metadata.profile.role,
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  useEffect(() => {
+    getUser()
+  }, [])
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
     defaultValues,
   })
 
-  function onSubmit(data: AccountFormValues) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // })
+  async function onSubmit(data: AccountFormValues) {
+    try {
+      const { data: userData, error } = await supabase.auth.updateUser({
+        data: {
+          name: data.name,
+          profile: {
+            dob: data.dob,
+            role: data.role,
+          },
+        },
+      })
+      if (error) {
+        throw error
+      }
+
+      if (userData) {
+        toast({
+          title: 'Successfully updated account information',
+          description: userData.user.email,
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -157,10 +197,10 @@ export function AccountForm() {
         />
         <FormField
           control={form.control}
-          name="language"
+          name="role"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
+              <FormLabel>Role</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -172,10 +212,9 @@ export function AccountForm() {
                         !field.value && 'text-muted-foreground',
                       )}>
                       {field.value
-                        ? languages.find(
-                            language => language.value === field.value,
-                          )?.label
-                        : 'Select language'}
+                        ? role.find(language => language.value === field.value)
+                            ?.label
+                        : 'Select role'}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </FormControl>
@@ -184,14 +223,14 @@ export function AccountForm() {
                   <Command>
                     <CommandInput placeholder="Search language..." />
                     <CommandList>
-                      <CommandEmpty>No language found.</CommandEmpty>
+                      <CommandEmpty>No role found.</CommandEmpty>
                       <CommandGroup>
-                        {languages.map(language => (
+                        {role.map(language => (
                           <CommandItem
                             value={language.label}
                             key={language.value}
                             onSelect={() => {
-                              form.setValue('language', language.value)
+                              form.setValue('role', language.value)
                             }}>
                             <Check
                               className={cn(
@@ -210,7 +249,7 @@ export function AccountForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                This is the language that will be used in the dashboard.
+                This is the role that will be used by the user.
               </FormDescription>
               <FormMessage />
             </FormItem>

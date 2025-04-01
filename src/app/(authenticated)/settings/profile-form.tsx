@@ -25,6 +25,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { supabase } from '@/lib/supabase'
+import { useEffect, useState } from 'react'
+import { User } from '@supabase/supabase-js'
+import { toast } from '@/hooks/use-toast'
 
 const profileFormSchema = z.object({
   username: z
@@ -39,41 +43,88 @@ const profileFormSchema = z.object({
     .string({
       required_error: 'Please select an email to display.',
     })
-    .email(),
-  bio: z.string().max(160).min(4),
-  urls: z
-    .array(
-      z.object({
-        value: z.string().url({ message: 'Please enter a valid URL.' }),
-      }),
-    )
+    .email()
     .optional(),
+  bio: z.string().max(160).min(4),
+  // urls: z
+  //   .array(
+  //     z.object({
+  //       value: z.string().url({ message: 'Please enter a valid URL.' }),
+  //     }),
+  //   )
+  //   .optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 // This can come from your database or API.
-const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'I own a computer.',
-  urls: [
-    { value: 'https://shadcn.com' },
-    { value: 'http://twitter.com/shadcn' },
-  ],
-}
 
 export function ProfileForm() {
+  const [user, setUser] = useState<User | null>(null)
+  const getUser = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+      if (error) {
+        throw error.message
+      }
+      if (user) {
+        // console.log(user)
+        // setUser(user)
+
+        form.reset({
+          email: user.email,
+          bio: user.user_metadata.profile.bio,
+          username: user.user_metadata.profile.username,
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  useEffect(() => {
+    getUser()
+  }, [])
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      email: '',
+      bio: '',
+      username: '',
+    },
     mode: 'onChange',
   })
 
-  const { fields, append } = useFieldArray({
-    name: 'urls',
-    control: form.control,
-  })
+  // const { fields, append } = useFieldArray({
+  //   name: 'urls',
+  //   control: form.control,
+  // })
 
-  function onSubmit(data: ProfileFormValues) {
+  async function onSubmit(data: ProfileFormValues) {
+    try {
+      const { data: userData, error } = await supabase.auth.updateUser({
+        data: {
+          profile: {
+            username: data.username,
+            bio: data.bio,
+          },
+        },
+      })
+      if (error) {
+        throw error
+      }
+      if (userData) {
+        toast({
+          title: 'Successfully updated profile information',
+          description: userData.user.email,
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
     // toast({
     //   title: "You submitted the following values:",
     //   description: (
@@ -107,6 +158,7 @@ export function ProfileForm() {
         <FormField
           control={form.control}
           name="email"
+          disabled={true}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
@@ -139,7 +191,7 @@ export function ProfileForm() {
             </FormItem>
           )}
         />
-        <div>
+        {/* <div>
           {fields.map((field, index) => (
             <FormField
               control={form.control}
@@ -169,7 +221,7 @@ export function ProfileForm() {
             onClick={() => append({ value: '' })}>
             Add URL
           </Button>
-        </div>
+        </div> */}
         <Button type="submit">Update profile</Button>
       </form>
     </Form>
