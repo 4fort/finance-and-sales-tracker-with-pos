@@ -20,6 +20,20 @@ export function MainNav({
         Dashboard
       </Link>
       <Link
+        href="/products"
+        className={`text-sm font-medium transition-colors hover:text-primary ${
+          pathname === '/products' ? '' : 'text-muted-foreground'
+        }`}>
+        Products
+      </Link>
+      <Link
+        href="/income"
+        className={`text-sm font-medium transition-colors hover:text-primary ${
+          pathname === '/income' ? '' : 'text-muted-foreground'
+        }`}>
+        Income
+      </Link>
+      <Link
         href="/customers"
         className={`text-sm font-medium transition-colors hover:text-primary ${
           pathname === '/customers' ? '' : 'text-muted-foreground'
