@@ -18,14 +18,20 @@ export default function ProductsToolbar() {
   }
 
   return (
-    <div className="w-full flex items-center justify-between">
-      <div className="bg-muted p-1 rounded-md border">
-        <Button variant={isActive('all')} onClick={() => setTab('all')}>
+    <div className="w-full flex items-center justify-between bg-white p-2 rounded-md border">
+      <div className="bg-muted p-0.5 rounded-md space-x-1">
+        <Button
+          variant={isActive('all')}
+          onClick={() => setTab('all')}
+          size="sm"
+          className="border-none hover:bg-background">
           All
         </Button>
         <Button
           variant={isActive('archived')}
-          onClick={() => setTab('archived')}>
+          onClick={() => setTab('archived')}
+          size="sm"
+          className="border-none hover:bg-background">
           Archived
         </Button>
       </div>
