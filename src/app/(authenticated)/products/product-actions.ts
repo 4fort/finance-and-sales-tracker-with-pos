@@ -14,7 +14,7 @@ export const productActions = {
       return null
     }
 
-    console.log(data)
+    // console.log(data)
 
     return data[0] as GetProductSalesSummaryResponse
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import ProductForm from './components/product-form'
+import ProductForm from './components/new-product-form'
 import { ProductSalesRow } from '@/types/Product'
 import ArchiveProductDialog from './components/archive-product-dialog'
 import RecoverProductDialog from './components/recover-product-dialog'

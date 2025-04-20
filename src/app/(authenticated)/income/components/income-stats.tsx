@@ -1,91 +1,101 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ProductStats } from '@/types/Product'
+import { IncomeStatsType, StatItem } from '@/types/Income'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  Package,
+  TrendingUp,
   DollarSign,
   Percent,
-  ShoppingCart,
+  Package,
 } from 'lucide-react'
+import React from 'react'
 
-export function ProductsStats({ stats }: { stats: ProductStats }) {
+interface IncomeStatsProps {
+  stats: IncomeStatsType
+}
+
+export default function IncomeStats({ stats }: IncomeStatsProps) {
+  console.log(stats)
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-          <Package className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalProducts.count}</div>
-          <p className="text-xs text-muted-foreground">
-            {!stats.totalProducts.change ? (
-              <span className="block">-</span>
-            ) : (
-              <span
-                className={`text-${
-                  stats.totalProducts.trend === 'up' ? 'green' : 'red'
-                }-500 flex items-center`}>
-                {stats.totalProducts.trend === 'up' ? (
-                  <ArrowUpIcon className="h-4 w-4 mr-1" />
-                ) : (
-                  <ArrowDownIcon className="h-4 w-4 mr-1" />
-                )}
-                {stats.totalProducts.trend === 'up' ? '+' : '-'}
-                {stats.totalProducts.change}
-              </span>
-            )}{' '}
-            since last {stats.totalProducts.period}
-          </p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
+          <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'PHP',
-            }).format(stats.inventoryValue.value)}
+            $
+            {stats.totalSales.value.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </div>
           <p className="text-xs text-muted-foreground">
-            {!stats.inventoryValue.change ? (
+            {!stats.totalSales.change ? (
               <span className="block">-</span>
             ) : (
               <span
                 className={`text-${
-                  stats.inventoryValue.trend === 'up' ? 'green' : 'red'
+                  stats.totalSales.trend === 'up' ? 'green' : 'red'
                 }-500 flex items-center`}>
-                {stats.inventoryValue.trend === 'up' ? (
+                {stats.totalSales.trend === 'up' ? (
                   <ArrowUpIcon className="h-4 w-4 mr-1" />
                 ) : (
                   <ArrowDownIcon className="h-4 w-4 mr-1" />
                 )}
-                {stats.inventoryValue.trend === 'up' ? '+' : '-'}
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'PHP',
-                }).format(stats.inventoryValue.value)}
+                {stats.totalSales.trend === 'up' ? '+' : '-'}
+                {stats.totalSales.change}%
               </span>
             )}{' '}
-            since last {stats.inventoryValue.period}
+            from last {stats.totalSales.period}
           </p>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Avg. Profit Margin
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">
+            $
+            {stats.totalProfit.value.toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {!stats.totalProfit.change ? (
+              <span className="block">-</span>
+            ) : (
+              <span
+                className={`text-${
+                  stats.totalProfit.trend === 'up' ? 'green' : 'red'
+                }-500 flex items-center`}>
+                {stats.totalProfit.trend === 'up' ? (
+                  <ArrowUpIcon className="h-4 w-4 mr-1" />
+                ) : (
+                  <ArrowDownIcon className="h-4 w-4 mr-1" />
+                )}
+                {stats.totalProfit.trend === 'up' ? '+' : '-'}
+                {stats.totalProfit.change}%
+              </span>
+            )}{' '}
+            from last {stats.totalProfit.period}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Profit Margin</CardTitle>
           <Percent className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {stats.profitMargin.percentage.toFixed(2)}%
+            {stats.profitMargin.value.toFixed(2)}%
           </div>
           <p className="text-xs text-muted-foreground">
             {!stats.profitMargin.change ? (
@@ -101,38 +111,41 @@ export function ProductsStats({ stats }: { stats: ProductStats }) {
                   <ArrowDownIcon className="h-4 w-4 mr-1" />
                 )}
                 {stats.profitMargin.trend === 'up' ? '+' : '-'}
-                {stats.profitMargin.change.toFixed(2)}%
+                {stats.profitMargin.change}%
               </span>
             )}{' '}
-            since last {stats.profitMargin.period}
+            from last {stats.profitMargin.period}
           </p>
         </CardContent>
       </Card>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
-          <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Stocks Sold</CardTitle>
+          <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.lowStockItems.count}</div>
+          <div className="text-2xl font-bold">
+            {stats.stocksSold.value.toLocaleString()}
+          </div>
           <p className="text-xs text-muted-foreground">
-            {!stats.lowStockItems.change ? (
+            {!stats.stocksSold.change ? (
               <span className="block">-</span>
             ) : (
               <span
                 className={`text-${
-                  stats.lowStockItems.trend === 'down' ? 'green' : 'red'
+                  stats.stocksSold.trend === 'up' ? 'green' : 'red'
                 }-500 flex items-center`}>
-                {stats.lowStockItems.trend === 'up' ? (
+                {stats.stocksSold.trend === 'up' ? (
                   <ArrowUpIcon className="h-4 w-4 mr-1" />
                 ) : (
                   <ArrowDownIcon className="h-4 w-4 mr-1" />
                 )}
-                {stats.lowStockItems.trend === 'up' ? '+' : '-'}
-                {stats.lowStockItems.change}
+                {stats.stocksSold.trend === 'up' ? '+' : '-'}
+                {stats.stocksSold.change}%
               </span>
             )}{' '}
-            since last {stats.lowStockItems.period}
+            from last {stats.stocksSold.period}
           </p>
         </CardContent>
       </Card>

@@ -22,20 +22,22 @@ const ProductsPage = () => {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 ">
       {!isPending && data && <ProductsStats stats={data?.stats} />}
-      <ProductsToolbar />
       {isPending ? (
-        <div className="">Loading...</div>
+        <div className="flex items-center justify-center w-full h-full">
+          <p className="text-lg font-semibold">Loading...</p>
+        </div>
       ) : (
-        <>
+        <div>
+          <ProductsToolbar />
           <DataTable
             columns={columns}
             data={
-              data?.products.filter(p =>
+              data?.products?.filter(p =>
                 tab === 'all' ? !p.is_archived : p.is_archived,
               ) ?? []
             }
           />
-        </>
+        </div>
       )}
     </div>
   )
