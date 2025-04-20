@@ -1,21 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { IncomeStatsType, StatItem } from '@/types/Income'
+import { StatItem } from '@/types/Income'
+import { ProductStats } from '@/types/Product'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  TrendingUp,
   DollarSign,
-  Percent,
   Package,
+  ShoppingCart,
 } from 'lucide-react'
 import React from 'react'
 
-interface IncomeStatsProps {
-  stats: IncomeStatsType
+export type DashboardStatsProps = {
+  stats: {
+    totalSales: StatItem
+    totalProfit: StatItem
+    totalProducts: ProductStats['totalProducts']
+    lowStockItems: ProductStats['lowStockItems']
+  }
 }
 
-export default function IncomeStats({ stats }: IncomeStatsProps) {
-  console.log(stats)
+export default function DashboardStats({ stats }: DashboardStatsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
@@ -29,8 +33,6 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
             {stats.totalSales.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-              style: 'currency',
-              currency: 'PHP',
             })}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -62,11 +64,10 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
+            $
             {stats.totalProfit.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-              style: 'currency',
-              currency: 'PHP',
             })}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -93,62 +94,58 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Profit Margin</CardTitle>
-          <Percent className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+          <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
-            {stats.profitMargin.value.toFixed(2)}%
-          </div>
+          <div className="text-2xl font-bold">{stats.totalProducts.count}</div>
           <p className="text-xs text-muted-foreground">
-            {!stats.profitMargin.change ? (
+            {!stats.totalProducts.change ? (
               <span className="block">-</span>
             ) : (
               <span
                 className={`text-${
-                  stats.profitMargin.trend === 'up' ? 'green' : 'red'
+                  stats.totalProducts.trend === 'up' ? 'green' : 'red'
                 }-500 flex items-center`}>
-                {stats.profitMargin.trend === 'up' ? (
+                {stats.totalProducts.trend === 'up' ? (
                   <ArrowUpIcon className="h-4 w-4 mr-1" />
                 ) : (
                   <ArrowDownIcon className="h-4 w-4 mr-1" />
                 )}
-                {stats.profitMargin.trend === 'up' ? '+' : '-'}
-                {stats.profitMargin.change}%
+                {stats.totalProducts.trend === 'up' ? '+' : '-'}
+                {stats.totalProducts.change}
               </span>
             )}{' '}
-            from last {stats.profitMargin.period}
+            since last {stats.totalProducts.period}
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Stocks Sold</CardTitle>
-          <Package className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
+          <ShoppingCart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
-            {stats.stocksSold.value.toLocaleString()}
-          </div>
+          <div className="text-2xl font-bold">{stats.lowStockItems.count}</div>
           <p className="text-xs text-muted-foreground">
-            {!stats.stocksSold.change ? (
+            {!stats.lowStockItems.change ? (
               <span className="block">-</span>
             ) : (
               <span
                 className={`text-${
-                  stats.stocksSold.trend === 'up' ? 'green' : 'red'
+                  stats.lowStockItems.trend === 'down' ? 'green' : 'red'
                 }-500 flex items-center`}>
-                {stats.stocksSold.trend === 'up' ? (
+                {stats.lowStockItems.trend === 'up' ? (
                   <ArrowUpIcon className="h-4 w-4 mr-1" />
                 ) : (
                   <ArrowDownIcon className="h-4 w-4 mr-1" />
                 )}
-                {stats.stocksSold.trend === 'up' ? '+' : '-'}
-                {stats.stocksSold.change}%
+                {stats.lowStockItems.trend === 'up' ? '+' : '-'}
+                {stats.lowStockItems.change}
               </span>
             )}{' '}
-            from last {stats.stocksSold.period}
+            since last {stats.lowStockItems.period}
           </p>
         </CardContent>
       </Card>

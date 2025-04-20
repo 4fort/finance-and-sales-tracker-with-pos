@@ -33,7 +33,7 @@ export function MainNav({
         }`}>
         Income
       </Link>
-      <Link
+      {/* <Link
         href="/customers"
         className={`text-sm font-medium transition-colors hover:text-primary ${
           pathname === '/customers' ? '' : 'text-muted-foreground'
@@ -46,7 +46,7 @@ export function MainNav({
           pathname === '/orders' ? '' : 'text-muted-foreground'
         }`}>
         Orders
-      </Link>
+      </Link> */}
       {/* <Link
         href="/products"
         className={`text-sm font-medium transition-colors hover:text-primary ${
