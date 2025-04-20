@@ -19,11 +19,13 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { IncomeChartDataType } from '@/types/Income'
+import { cn } from '@/lib/utils'
 
 interface IncomeChartProps {
   data: IncomeChartDataType[]
   title?: string
   description?: string
+  className?: string
 }
 
 const CustomTooltip = ({
@@ -60,9 +62,10 @@ export function IncomeChart({
   data,
   title = 'Income Overview',
   description = 'View your sales and profit trends over time',
+  className,
 }: IncomeChartProps) {
   return (
-    <Card className="col-span-4">
+    <Card className={cn('col-span-4', className)}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
