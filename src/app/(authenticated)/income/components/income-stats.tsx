@@ -25,7 +25,6 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            $
             {stats.totalSales.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
