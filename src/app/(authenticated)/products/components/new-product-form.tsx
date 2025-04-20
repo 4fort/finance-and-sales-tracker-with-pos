@@ -42,6 +42,7 @@ import {
 import { productActions } from '../product-actions'
 import { GetProductSalesSummaryResponse } from '@/types/Product'
 import { useProductContext } from '../products-context'
+import { CurrencyInput } from '@/components/ui/currency-input'
 
 export default function ProductForm() {
   const queryClient = useQueryClient()
@@ -189,7 +190,7 @@ export default function ProductForm() {
                             Unit Price <RequiredFieldSymbol />
                           </FormLabel>
                           <FormControl>
-                            <Input
+                            <CurrencyInput
                               type="string"
                               placeholder="0.00"
                               {...field}
@@ -211,7 +212,7 @@ export default function ProductForm() {
                             Cost Price <RequiredFieldSymbol />
                           </FormLabel>
                           <FormControl>
-                            <Input
+                            <CurrencyInput
                               type="string"
                               placeholder="0.00"
                               {...field}
@@ -236,11 +237,15 @@ export default function ProductForm() {
                           <FormControl>
                             <Input type="string" placeholder="0" {...field} />
                           </FormControl>
+                          <FormDescription>
+                            Quantity in stock is the number of items available
+                            for sale.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name="category_id"
                       render={({ field }) => (
@@ -269,7 +274,7 @@ export default function ProductForm() {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
                     <DialogFooter>
                       <Button
                         type="submit"

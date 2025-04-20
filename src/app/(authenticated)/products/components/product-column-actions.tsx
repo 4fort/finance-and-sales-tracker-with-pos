@@ -10,7 +10,7 @@ import {
 import { ProductSalesRow } from '@/types/Product'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import React, { use } from 'react'
-import ProductForm from './product-form'
+import ProductForm from './new-product-form'
 import { useProductContext } from '../products-context'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { productActions } from '../product-actions'

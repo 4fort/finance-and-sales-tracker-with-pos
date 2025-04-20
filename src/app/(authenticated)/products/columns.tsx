@@ -15,7 +15,7 @@ import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { ProductSalesRow } from '@/types/Product'
 import { Progress } from '@/components/ui/progress'
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react'
-import ProductForm from './components/product-form'
+import ProductForm from './components/new-product-form'
 import ProductColumnActions from './components/product-column-actions'
 
 export const columns: ColumnDef<ProductSalesRow>[] = [
@@ -80,17 +80,18 @@ export const columns: ColumnDef<ProductSalesRow>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const initialStock = parseInt(row.getValue('quantity_in_stock'))
+      const remainingStock = parseInt(row.getValue('quantity_in_stock'))
       const soldQuantity = parseInt(row.getValue('sold_quantity'))
-      const stock = initialStock - soldQuantity
+      const initialStock = remainingStock + soldQuantity
+      const stock = remainingStock > 0 ? remainingStock : 0
       const stockPercentage = (stock / initialStock) * 100
 
       return (
         <div className="px-4">
-          {stock > 0 ? (
-            <div className="text-center text-green-500">{stock}</div>
+          {stock > 10 ? (
+            <div className="text-center font-bold text-green-500">{stock}</div>
           ) : (
-            <div className="text-center text-red-500">{stock}</div>
+            <div className="text-center font-bold text-red-500">{stock}</div>
           )}
           <Progress value={stockPercentage} />
         </div>

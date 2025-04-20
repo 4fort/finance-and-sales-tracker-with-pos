@@ -18,7 +18,7 @@ export default function ProductsToolbar() {
   }
 
   return (
-    <div className="w-full flex items-center justify-between bg-white p-2 rounded-md border">
+    <div className="flex items-center justify-between p-4 bg-white rounded-tl-md rounded-tr-md border-border border-l border-t border-r">
       <div className="bg-muted p-0.5 rounded-md space-x-1">
         <Button
           variant={isActive('all')}
@@ -42,7 +42,7 @@ export default function ProductsToolbar() {
             placeholder="Search products..."
             value={globalSearchFilter}
             onChange={e => setGlobalSearchFilter(e.target.value)}
-            className="bg-white pl-8"
+            className="bg-muted pl-8"
           />
         </div>
         <Button onClick={() => setFormIsOpen(true)}>+ Add Product</Button>
