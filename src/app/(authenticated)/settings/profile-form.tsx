@@ -31,14 +31,14 @@ import { User } from '@supabase/supabase-js'
 import { toast } from '@/hooks/use-toast'
 
 const profileFormSchema = z.object({
-  username: z
-    .string()
-    .min(2, {
-      message: 'Username must be at least 2 characters.',
-    })
-    .max(30, {
-      message: 'Username must not be longer than 30 characters.',
-    }),
+  // username: z
+  //   .string()
+  //   .min(2, {
+  //     message: 'Username must be at least 2 characters.',
+  //   })
+  //   .max(30, {
+  //     message: 'Username must not be longer than 30 characters.',
+  //   }),
   email: z
     .string({
       required_error: 'Please select an email to display.',
@@ -77,7 +77,7 @@ export function ProfileForm() {
         form.reset({
           email: user.email,
           bio: user.user_metadata.profile.bio,
-          username: user.user_metadata.profile.username,
+          // username: user.user_metadata.profile.username,
         })
       }
     } catch (error) {
@@ -93,7 +93,7 @@ export function ProfileForm() {
     defaultValues: {
       email: '',
       bio: '',
-      username: '',
+      // username: '',
     },
     mode: 'onChange',
   })
@@ -108,7 +108,7 @@ export function ProfileForm() {
       const { data: userData, error } = await supabase.auth.updateUser({
         data: {
           profile: {
-            username: data.username,
+            // username: data.username,
             bio: data.bio,
           },
         },
@@ -138,7 +138,7 @@ export function ProfileForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
+        {/* <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
@@ -154,7 +154,7 @@ export function ProfileForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <FormField
           control={form.control}
           name="email"
