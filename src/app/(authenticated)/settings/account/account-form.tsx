@@ -39,8 +39,9 @@ import { toast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 
 const role = [
-  { label: 'Super Admin', value: 'super-admin' },
   { label: 'Admin', value: 'admin' },
+  { label: 'Owner', value: 'owner' },
+  { label: 'Manager', value: 'manager' },
 ] as const
 
 const accountFormSchema = z.object({
@@ -84,10 +85,10 @@ export function AccountForm() {
 
         form.reset({
           name: user.user_metadata.name,
-          dob: user.user_metadata.profile.dob
-            ? new Date(user.user_metadata.profile.dob)
+          dob: user.user_metadata.personal_details.dob
+            ? new Date(user.user_metadata.personal_details.dob)
             : new Date(),
-          role: user.user_metadata.profile.role,
+          role: user.user_metadata.role,
         })
       }
     } catch (error) {
@@ -107,9 +108,9 @@ export function AccountForm() {
       const { data: userData, error } = await supabase.auth.updateUser({
         data: {
           name: data.name,
-          profile: {
+          role: data.role,
+          personal_details: {
             dob: data.dob,
-            role: data.role,
           },
         },
       })
@@ -221,7 +222,7 @@ export function AccountForm() {
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0">
                   <Command>
-                    <CommandInput placeholder="Search language..." />
+                    <CommandInput placeholder="Search role..." />
                     <CommandList>
                       <CommandEmpty>No role found.</CommandEmpty>
                       <CommandGroup>
