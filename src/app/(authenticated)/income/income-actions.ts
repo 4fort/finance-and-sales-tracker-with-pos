@@ -24,9 +24,7 @@ export const incomeActions = {
       return null
     }
 
-    const { data, error } = await supabase.rpc('get_monthly_chart_data', {
-      user_uuid: user_id,
-    })
+    const { data, error } = await supabase.rpc('get_monthly_chart_data')
     if (error) {
       console.error('Error fetching income chart data:', error)
       return null
@@ -47,9 +45,7 @@ export const incomeActions = {
       return null
     }
 
-    const { data, error } = await supabase.rpc('get_user_sales', {
-      user_uuid: user_id,
-    })
+    const { data, error } = await supabase.rpc('get_user_sales')
     if (error) {
       console.error('Error fetching user sales:', error)
       return null

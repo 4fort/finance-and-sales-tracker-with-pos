@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
+import { Separator } from '../ui/separator'
 
 export function MainNav({
   className,
@@ -12,6 +13,14 @@ export function MainNav({
     <nav
       className={cn('flex items-center space-x-4 lg:space-x-6', className)}
       {...props}>
+      <Link
+        href="/pos"
+        className={`text-sm font-medium transition-colors hover:text-primary ${
+          pathname === '/pos' ? '' : 'text-muted-foreground'
+        }`}>
+        POS
+      </Link>
+      <Separator orientation="vertical" className="h-6" />
       <Link
         href="/dashboard"
         className={`text-sm font-medium transition-colors hover:text-primary ${

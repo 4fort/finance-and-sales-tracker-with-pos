@@ -45,6 +45,8 @@ import {
 import { useAuth } from '@/hooks/auth'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { useBusinessProfileContext } from '@/app/business-profile-context'
+import { profile } from 'console'
 
 type Team = {
   value: string
@@ -55,51 +57,43 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
-export function TeamSwitcher({ className }: TeamSwitcherProps) {
+export function BusinessProfileSwitcher({ className }: TeamSwitcherProps) {
   // const { user } = useAuth({ middleware: 'auth' })
-  const { isPending, error, data } = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase.auth.getUser()
-        if (error) {
-          console.error(error)
-        }
-        if (data) {
-          console.log('data user', data)
-          return data
-        }
-      } catch (error: any) {
-        console.error(error)
-      }
-    },
-  })
+  // const {
+  //   isPending,
+  //   error,
+  //   data: userData,
+  // } = useQuery({
+  //   queryKey: ['user'],
+  //   queryFn: async () => {
+  //     try {
+  //       const { data, error } = await supabase.auth.getUser()
+  //       if (error) {
+  //         console.error(error)
+  //       }
+  //       if (data) {
+  //         // console.log('data user', data)
+  //         return data
+  //       }
+  //     } catch (error: any) {
+  //       console.error(error)
+  //     }
+  //   },
+  // })
+
+  const { profiles, selectedProfile, setSelectedProfile } =
+    useBusinessProfileContext()
 
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
   const groups = [
     {
-      label: 'Personal Account',
-      teams: [
-        {
-          label: data?.user?.email,
-          value: 'personal',
-        },
-      ],
+      label: 'Business Profiles',
+      teams: profiles.map(profile => ({
+        label: profile.shop_name,
+        value: profile.id.toString(),
+      })),
     },
-    // {
-    //   label: 'Teams',
-    //   teams: [
-    //     {
-    //       label: 'Acme Inc.',
-    //       value: 'acme-inc',
-    //     },
-    //     {
-    //       label: 'Monsters Inc.',
-    //       value: 'monsters',
-    //     },
-    //   ],
-    // },
   ]
 
   return (
@@ -114,12 +108,12 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
             className={cn('w-[200px] justify-between', className)}>
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${data?.user?.email}.png`}
+                src={`https://avatar.vercel.sh/${selectedProfile?.id}.png`}
                 className="grayscale"
               />
               {/* <AvatarFallback>SC</AvatarFallback> */}
             </Avatar>
-            {data?.user?.email}
+            {selectedProfile?.shop_name}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -134,7 +128,10 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
                     <CommandItem
                       key={team.value}
                       onSelect={() => {
-                        // setSelectedTeam(team)
+                        const profile = profiles.find(
+                          p => p.id.toString() === team.value,
+                        )
+                        setSelectedProfile(profile || null)
                         setOpen(false)
                       }}
                       className="text-sm">
@@ -144,7 +141,6 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
                           alt={team.label}
                           className="grayscale"
                         />
-                        {/* <AvatarFallback>SC</AvatarFallback> */}
                       </Avatar>
                       {team.label}
                     </CommandItem>
@@ -155,16 +151,7 @@ export function TeamSwitcher({ className }: TeamSwitcherProps) {
             <CommandSeparator />
             <CommandList>
               <CommandGroup>
-                <DialogTrigger asChild>
-                  {/* <CommandItem
-                    onSelect={() => {
-                      setOpen(false)
-                      setShowNewTeamDialog(true)
-                    }}>
-                    <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Team
-                  </CommandItem> */}
-                </DialogTrigger>
+                <DialogTrigger asChild></DialogTrigger>
               </CommandGroup>
             </CommandList>
           </Command>

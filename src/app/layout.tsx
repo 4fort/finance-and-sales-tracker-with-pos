@@ -4,6 +4,7 @@ import './globals.css'
 import { Header } from '@/components/LandingPage/Header'
 import { Footer } from '@/components/LandingPage/Footer'
 import QueryProvider from '@/util/QueryProviders'
+import { BusinessProfileContextProvider } from './business-profile-context'
 const nunito = Nunito({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -19,7 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunito.className} text-gray-900 antialiased`}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <BusinessProfileContextProvider>
+            {children}
+          </BusinessProfileContextProvider>
+        </QueryProvider>
       </body>
     </html>
   )

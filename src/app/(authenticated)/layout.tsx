@@ -2,7 +2,7 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/auth'
 import { Loader2 } from 'lucide-react'
-import { TeamSwitcher } from '@/components/Dashboard/team-switcher'
+import { BusinessProfileSwitcher } from '@/components/Dashboard/business-profile-switcher'
 import { MainNav } from '@/components/Dashboard/main-nav'
 import { Search } from '@/components/Dashboard/search'
 import { UserNav } from '@/components/Dashboard/user-nav'
@@ -27,13 +27,13 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     <div className="min-h-screen bg-gray-100 ">
       <Toaster />
       {/* Page Content */}
-      <main>
+      <main className="h-screen flex flex-col">
         <div className="border-b bg-white">
           <div className="flex h-16 items-center px-4">
-            <TeamSwitcher />
+            <BusinessProfileSwitcher />
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
-              <Search />
+              {/* <Search /> */}
               <UserNav />
             </div>
           </div>
