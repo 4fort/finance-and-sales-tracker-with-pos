@@ -13,6 +13,7 @@ export type BusinessProfile = {
   zip_code: string
   created_at: string
   owner_id: string
+  manager_name: string
 }
 
 type BusinessProfileContextType = {

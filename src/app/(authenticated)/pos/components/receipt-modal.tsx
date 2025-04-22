@@ -51,6 +51,9 @@ export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
               {selectedProfile?.city}, {selectedProfile?.state}{' '}
               {selectedProfile?.zip_code}
             </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Served by <strong>{selectedProfile?.manager_name}</strong>
+            </p>
           </div>
 
           <div className="flex justify-between text-sm mb-2">

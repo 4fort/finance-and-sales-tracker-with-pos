@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import React, { useState } from 'react'
-import { Tabs, useProductContext } from '../products-context'
+import { ProductTabs, useProductContext } from '../products-context'
 import { Search } from 'lucide-react'
 
 export default function ProductsToolbar() {
@@ -13,7 +13,7 @@ export default function ProductsToolbar() {
     setTab,
   } = useProductContext()
 
-  const isActive = (currentTab: Tabs) => {
+  const isActive = (currentTab: ProductTabs) => {
     return tab === currentTab ? 'outline' : 'ghost'
   }
 

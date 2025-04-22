@@ -59,9 +59,17 @@ export default function IncomePage() {
   //   // const filteredStats = incomeStats?.
   // }, [monthSelected])
 
-  const { viewSelection } = useIncomeContext()
+  const { viewSelection, tab } = useIncomeContext()
 
   const itemSales = userSales?.flatMap(sale => sale.items || [])
+
+  const filteredUserSales = userSales?.filter(sale => {
+    return (
+      (tab === 'all' || sale.payment_method === tab) &&
+      (viewSelection?.value === 'sales' ||
+        (viewSelection?.value === 'items' && sale.items!.length > 0))
+    )
+  })
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -78,7 +86,7 @@ export default function IncomePage() {
             {viewSelection?.value === 'items' ? (
               <DataTable columns={itemsColumns} data={itemSales!} />
             ) : (
-              <DataTable columns={salesColumns} data={userSales!} />
+              <DataTable columns={salesColumns} data={filteredUserSales!} />
             )}
           </div>
         </>

@@ -26,7 +26,21 @@ export const columns: ColumnDef<ProductSalesRow>[] = [
   },
   {
     accessorKey: 'product_name',
-    header: 'Product Name',
+    header: ({ column }) => (
+      <Button
+        onClick={() => column.toggleSorting()}
+        variant="ghost"
+        className="w-full">
+        Product Name
+        {column.getIsSorted() === 'asc' ? (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        ) : column.getIsSorted() === 'desc' ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        )}{' '}
+      </Button>
+    ),
     size: 200,
   },
   {

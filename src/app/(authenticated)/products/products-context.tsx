@@ -6,7 +6,7 @@ import { ProductSalesRow } from '@/types/Product'
 import ArchiveProductDialog from './components/archive-product-dialog'
 import RecoverProductDialog from './components/recover-product-dialog'
 
-export type Tabs = 'all' | 'archived'
+export type ProductTabs = 'all' | 'archived'
 
 type ProductContextType = {
   formIsOpen: boolean
@@ -21,8 +21,8 @@ type ProductContextType = {
   >
   globalSearchFilter: string
   setGlobalSearchFilter: React.Dispatch<React.SetStateAction<string>>
-  tab: Tabs
-  setTab: React.Dispatch<React.SetStateAction<Tabs>>
+  tab: ProductTabs
+  setTab: React.Dispatch<React.SetStateAction<ProductTabs>>
 }
 
 export const ProductContext = React.createContext<ProductContextType>({
@@ -59,7 +59,7 @@ export const ProductsContextProvider = ({
   const [selectedProduct, setSelectedProduct] =
     React.useState<ProductSalesRow | null>(null)
   const [globalSearchFilter, setGlobalSearchFilter] = React.useState('')
-  const [tab, setTab] = React.useState<Tabs>('all')
+  const [tab, setTab] = React.useState<ProductTabs>('all')
 
   React.useEffect(() => {
     if (!formIsOpen) setSelectedProduct(null)

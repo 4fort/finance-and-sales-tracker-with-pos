@@ -36,7 +36,7 @@ export function ProductGrid({ products, onProductSelect }: ProductGridProps) {
         return (
           <Card
             key={product.product_id}
-            className={`cursor-pointer hover:border-primary transition-colors ${
+            className={`cursor-pointer hover:border-green-600 hover:bg-green-300 transition-colors ${
               status === 'out-of-stock' ? 'opacity-60 pointer-events-none' : ''
             }`}
             onClick={() =>
