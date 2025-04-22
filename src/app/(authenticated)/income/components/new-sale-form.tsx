@@ -341,7 +341,7 @@ function Item({
   //   const [isChecked, setIsChecked] = useState(false)
   const [quantity, setQuantity] = useState<string>('')
 
-  const availableStocks = product.quantity_in_stock - product.sold_quantity
+  const availableStocks = product.quantity_in_stock
   const isAvailable = availableStocks > 0
 
   const isChecked = field.value.some(

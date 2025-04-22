@@ -37,6 +37,7 @@ import { supabase } from '@/lib/supabase'
 import { useEffect } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
+import { Textarea } from '@/components/ui/textarea'
 
 const role = [
   { label: 'Admin', value: 'admin' },
@@ -59,6 +60,7 @@ const accountFormSchema = z.object({
   role: z.string({
     required_error: 'Please select a language.',
   }),
+  bio: z.string().max(160).min(4),
 })
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
@@ -67,6 +69,7 @@ type AccountFormValues = z.infer<typeof accountFormSchema>
 const defaultValues: Partial<AccountFormValues> = {
   // name: "Your name",
   dob: new Date(),
+  bio: '',
 }
 
 export function AccountForm() {
@@ -89,6 +92,7 @@ export function AccountForm() {
             ? new Date(user.user_metadata.personal_details.dob)
             : new Date(),
           role: user.user_metadata.role,
+          bio: user.user_metadata.personal_details.bio,
         })
       }
     } catch (error) {
@@ -111,6 +115,7 @@ export function AccountForm() {
           role: data.role,
           personal_details: {
             dob: data.dob,
+            bio: data.bio,
           },
         },
       })
@@ -251,6 +256,27 @@ export function AccountForm() {
               </Popover>
               <FormDescription>
                 This is the role that will be used by the user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Tell us a little bit about yourself"
+                  className="resize-none bg-white"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>
+                You can <span>@mention</span> other users and organizations to
+                link to them.
               </FormDescription>
               <FormMessage />
             </FormItem>
