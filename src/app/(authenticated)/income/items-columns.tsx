@@ -86,10 +86,19 @@ export const itemsColumns: ColumnDef<Item>[] = [
   },
   {
     accessorKey: 'sales_created_at',
-    header: () => <div className="text-center">Date</div>,
+    header: 'Date',
     cell: ({ row }) => {
       const date = new Date(row.getValue('sales_created_at'))
-      return <div className="text-center">{date.toLocaleDateString()}</div>
+      return (
+        <div className="text-center">
+          {date.toLocaleDateString()}
+          {', '}
+          {date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </div>
+      )
     },
   },
   {

@@ -71,10 +71,13 @@ const DashboardPage = () => {
               }}
             />
             <div className="grid grid-cols-12 gap-4">
-              <IncomeChart data={incomeChartData!} className="col-span-7" />
+              <IncomeChart
+                data={incomeChartData!}
+                className="col-span-7 bg-foreground text-background"
+              />
               <DashboardRecentSales
                 sales={userSales!.slice(0, 4) || []}
-                className="col-span-5"
+                className="col-span-5 bg-foreground text-background"
               />
             </div>
           </>

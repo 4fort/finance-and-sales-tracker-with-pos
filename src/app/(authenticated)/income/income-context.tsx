@@ -6,6 +6,8 @@ import NewSaleForm from './components/new-sale-form'
 
 // export type ViewSelection = 'sales' | 'items'
 
+export type IncomeTabs = 'all' | 'gcash' | 'card' | 'cash'
+
 export const viewSelections = [
   {
     label: 'Sales',
@@ -30,6 +32,8 @@ type IncomeContextType = {
   viewAllItems: (sale_id: string) => void
   newSaleFormOpen: boolean
   setNewSaleFormOpen: React.Dispatch<React.SetStateAction<boolean>>
+  tab: IncomeTabs
+  setTab: React.Dispatch<React.SetStateAction<IncomeTabs>>
 }
 
 export const IncomeContext = React.createContext<IncomeContextType>({
@@ -40,6 +44,8 @@ export const IncomeContext = React.createContext<IncomeContextType>({
   viewAllItems: () => {},
   newSaleFormOpen: false,
   setNewSaleFormOpen: () => {},
+  setTab: () => {},
+  tab: 'all',
 })
 
 export const useIncomeContext = () => {
@@ -60,6 +66,7 @@ export const IncomeContextProvider = ({
   >(viewSelections[0])
   const [globalSearchFilter, setGlobalSearchFilter] = React.useState('')
   const [newSaleFormOpen, setNewSaleFormOpen] = React.useState(false)
+  const [tab, setTab] = React.useState<IncomeTabs>('all')
 
   const viewAllItems = (sale_id: string) => {
     setViewSelection(viewSelections[1])
@@ -80,6 +87,8 @@ export const IncomeContextProvider = ({
         viewAllItems,
         newSaleFormOpen,
         setNewSaleFormOpen,
+        tab,
+        setTab,
       }}>
       <NewSaleForm />
       {children}

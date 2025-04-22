@@ -41,7 +41,7 @@ import {
   BusinessProfile,
   useBusinessProfileContext,
 } from '@/app/business-profile-context'
-import { Info } from 'lucide-react'
+import { Info, Plus } from 'lucide-react'
 import { BusinessProfileSwitcher } from '@/components/Dashboard/business-profile-switcher'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 
@@ -53,6 +53,7 @@ const profileFormSchema = z.object({
     .email()
     .optional(),
   business_profile: z.coerce.number().optional(),
+  manager_name: z.string().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -65,6 +66,9 @@ export function ProfileForm() {
   >(undefined)
   const [isCreateBusinessProfileFormOpen, setIsCreateBusinessProfileFormOpen] =
     useState(false)
+
+  const { profiles, selectedProfile, setSelectedProfile } =
+    useBusinessProfileContext()
 
   const [user, setUser] = useState<User | null>(null)
   const getUser = async () => {
@@ -84,6 +88,7 @@ export function ProfileForm() {
           'business_profile',
           user.user_metadata.profile.business_profile,
         )
+        form.setValue('manager_name', selectedProfile?.manager_name)
       }
     } catch (error) {
       console.error(error)
@@ -95,21 +100,23 @@ export function ProfileForm() {
     defaultValues: {
       email: '',
       business_profile: undefined,
+      manager_name: '',
     },
     values: {
       email: user?.email,
       business_profile: user?.user_metadata.profile.business_profile,
+      manager_name: selectedProfile?.manager_name,
     },
     mode: 'onChange',
   })
-
-  const { profiles, setSelectedProfile } = useBusinessProfileContext()
 
   // const userPrefBusinessProfile = user?.user_metadata.profile.business_profile
 
   useEffect(() => {
     getUser()
   }, [])
+
+  const queryClient = useQueryClient()
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -120,10 +127,19 @@ export function ProfileForm() {
           },
         },
       })
-      if (error) {
-        throw error
+
+      const { data: businessProfile, error: businessProfileError } =
+        await supabase
+          .from('business_profiles')
+          .update({
+            manager_name: data.manager_name,
+          })
+          .eq('id', data.business_profile)
+
+      if (error || businessProfileError) {
+        throw error ?? businessProfileError
       }
-      if (userData) {
+      if (userData || businessProfile) {
         toast({
           title: 'Successfully updated profile information',
           description: userData.user.email,
@@ -134,6 +150,8 @@ export function ProfileForm() {
           )
         }
         if (data.business_profile) {
+          queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
+
           const _selectedProfile = profiles.find(
             profile => profile.id === data.business_profile,
           )
@@ -157,6 +175,111 @@ export function ProfileForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="business_profile"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Business Profile</FormLabel>
+                  <div className="flex justify-between">
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value?.toString()}
+                      value={field.value?.toString()}>
+                      <FormControl>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select your prefered business profile" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {profiles.map(profile => (
+                          <SelectItem
+                            key={profile.id}
+                            value={profile.id.toString()}>
+                            <div className="flex items-center">
+                              <Avatar className="mr-2 h-5 w-5">
+                                <AvatarImage
+                                  src={`https://avatar.vercel.sh/${profile?.id}.png`}
+                                  className="grayscale"
+                                />
+                              </Avatar>
+                              {profile.shop_name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      type="button"
+                      onClick={() => setIsCreateBusinessProfileFormOpen(true)}>
+                      <Plus className="h-4 w-4 mr-2" /> Create custom business
+                      profile
+                    </Button>
+                  </div>
+                  <FormDescription>
+                    This is the business profile that will be used for your
+                    transactions and receipts. You can also temporarily switch
+                    profile at the top-left corner of your screen.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {!userPrefBusinessProfile || userPrefBusinessProfile === 2 ? (
+              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
+                <Info className="w-6 self-start" />
+                <p>
+                  You are currently using the default business profile. It is
+                  advised to create or use a custom business profile to manage
+                  your business information effectively.
+                </p>
+              </div>
+            ) : (
+              selectedProfile && (
+                <div className="grid grid-cols-2">
+                  <div className="space-y-4 divide-y text-muted-foreground">
+                    <div>Shop name</div>
+                    <div>Street</div>
+                    <div>City</div>
+                    <div>State</div>
+                    <div>Zip code</div>
+                    <div>Manager name</div>
+                  </div>
+                  <div className="space-y-4 divide-y">
+                    <div>{selectedProfile.shop_name}</div>
+                    <div>{selectedProfile.street}</div>
+                    <div>{selectedProfile.city}</div>
+                    <div>{selectedProfile.state}</div>
+                    <div>{selectedProfile.zip_code}</div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="manager_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input
+                                placeholder="Manager name"
+                                {...field}
+                                className="bg-white"
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              This is the name of the manager of the current
+                              selected business profile.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
           <FormField
             control={form.control}
             name="email"
@@ -174,68 +297,6 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="business_profile"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Business Profile</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value?.toString()}
-                    value={field.value?.toString()}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your prefered business profile" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {profiles.map(profile => (
-                        <SelectItem
-                          key={profile.id}
-                          value={profile.id.toString()}>
-                          <div className="flex items-center">
-                            <Avatar className="mr-2 h-5 w-5">
-                              <AvatarImage
-                                src={`https://avatar.vercel.sh/${profile?.id}.png`}
-                                className="grayscale"
-                              />
-                            </Avatar>
-                            {profile.shop_name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This is the business profile that will be used for your
-                    transactions and receipts. You can also temporarily switch
-                    profile at the top-left corner of your screen.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {(!userPrefBusinessProfile || userPrefBusinessProfile === 2) && (
-              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
-                <Info className="w-6 self-start" />
-                <p>
-                  You are currently using the default business profile. It is
-                  advised to create or use a custom business profile to manage
-                  your business information effectively.
-                </p>
-              </div>
-            )}
-            <div className="flex flex-col w-min space-y-4">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => setIsCreateBusinessProfileFormOpen(true)}>
-                Create a custom business profile
-              </Button>
-            </div>
-          </div>
           <Button type="submit">Update business profile</Button>
         </form>
       </Form>
@@ -284,6 +345,7 @@ const businessProfileFormSchema = z.object({
   zip_code: z.string().min(1, {
     message: 'Please enter a zip code.',
   }),
+  manager_name: z.string().optional(),
 })
 
 function BusinessProfileForm({
@@ -303,6 +365,7 @@ function BusinessProfileForm({
       state: '',
       street: '',
       zip_code: '',
+      manager_name: '',
     },
   })
 
@@ -432,6 +495,22 @@ function BusinessProfileForm({
                   <Input placeholder="Zip Code" {...field} />
                 </FormControl>
                 <FormDescription>Enter your zip code.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="manager_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Manager Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Manager Name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This is the name of the manager of this business profile.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -29,10 +29,11 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            $
             {stats.totalSales.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
+              style: 'currency',
+              currency: 'PHP',
             })}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -64,10 +65,11 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            $
             {stats.totalProfit.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
+              style: 'currency',
+              currency: 'PHP',
             })}
           </div>
           <p className="text-xs text-muted-foreground">

@@ -21,14 +21,14 @@ export default function DashboardRecentSales({
   className?: string
 }) {
   return (
-    <Card className={cn(className, 'bg-card-foreground text-background')}>
+    <Card className={cn(className)}>
       <CardHeader>
         <CardTitle>Recent Sales</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-none!">
+            <TableRow>
               <TableHead />
               <TableHead>ID</TableHead>
               <TableHead>Customer Name</TableHead>
@@ -48,7 +48,7 @@ export default function DashboardRecentSales({
                 'debit',
               ]
               return (
-                <TableRow key={sale.id} className="hover:bg-muted/10">
+                <TableRow key={sale.id}>
                   <TableCell>
                     <div className="flex items-center justify-center py-4">
                       <span className="rounded-lg bg-neutral-700 text-white h-auto p-1.5 aspect-square">

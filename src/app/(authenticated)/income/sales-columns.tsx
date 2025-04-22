@@ -12,7 +12,14 @@ import {
 import { IncomeSalesRowType } from '@/types/Income'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { ColumnDef } from '@tanstack/react-table'
-import { Banknote, CreditCard, SmartphoneNfc } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Banknote,
+  CreditCard,
+  SmartphoneNfc,
+} from 'lucide-react'
 import SalesColumnActions from './components/sales-column-actions'
 
 export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
@@ -51,7 +58,21 @@ export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
   },
   {
     accessorKey: 'payment_method',
-    header: 'Payment Method',
+    header: ({ column }) => (
+      <Button
+        onClick={() => column.toggleSorting()}
+        variant="ghost"
+        className="w-full">
+        Payment Method
+        {column.getIsSorted() === 'asc' ? (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        ) : column.getIsSorted() === 'desc' ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        )}{' '}
+      </Button>
+    ),
     cell: ({ row }) => {
       const paymentMethod = row.getValue('payment_method') as string
       return <div className="capitalize">{paymentMethod}</div>
@@ -67,7 +88,21 @@ export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
   },
   {
     accessorKey: 'total_amount',
-    header: 'Total Amount',
+    header: ({ column }) => (
+      <Button
+        onClick={() => column.toggleSorting()}
+        variant="ghost"
+        className="w-full">
+        Total Amount
+        {column.getIsSorted() === 'asc' ? (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        ) : column.getIsSorted() === 'desc' ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        )}{' '}
+      </Button>
+    ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('total_amount'))
       const formatted = new Intl.NumberFormat('en-US', {
@@ -79,7 +114,21 @@ export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
   },
   {
     accessorKey: 'paid_amount',
-    header: 'Paid Amount',
+    header: ({ column }) => (
+      <Button
+        onClick={() => column.toggleSorting()}
+        variant="ghost"
+        className="w-full">
+        Paid Amount
+        {column.getIsSorted() === 'asc' ? (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        ) : column.getIsSorted() === 'desc' ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        )}{' '}
+      </Button>
+    ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('paid_amount'))
       const formatted = new Intl.NumberFormat('en-US', {
@@ -91,7 +140,7 @@ export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
   },
   {
     accessorKey: 'change',
-    header: 'Change',
+    header: ({ column }) => <div className="w-full text-center">Change</div>,
     cell: ({ row }) => {
       const amount =
         parseFloat(row.getValue('paid_amount')) -
@@ -105,10 +154,33 @@ export const salesColumns: ColumnDef<IncomeSalesRowType>[] = [
   },
   {
     accessorKey: 'created_at',
-    header: 'Date',
+    header: ({ column }) => (
+      <Button
+        onClick={() => column.toggleSorting()}
+        variant="ghost"
+        className="w-full">
+        Date
+        {column.getIsSorted() === 'asc' ? (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        ) : column.getIsSorted() === 'desc' ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        )}{' '}
+      </Button>
+    ),
     cell: ({ row }) => {
       const date = new Date(row.getValue('created_at'))
-      return <div className="text-center">{date.toLocaleDateString()}</div>
+      return (
+        <div className="text-center">
+          {date.toLocaleDateString()}
+          {', '}
+          {date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </div>
+      )
     },
   },
   {
