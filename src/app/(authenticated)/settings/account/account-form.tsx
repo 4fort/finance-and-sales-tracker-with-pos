@@ -34,15 +34,16 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { supabase } from '@/lib/supabase'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import { Textarea } from '@/components/ui/textarea'
 
-const role = [
+const roles = [
   { label: 'Admin', value: 'admin' },
   { label: 'Owner', value: 'owner' },
   { label: 'Manager', value: 'manager' },
+  { label: 'Cashier', value: 'cashier' },
 ] as const
 
 const accountFormSchema = z.object({
@@ -58,23 +59,33 @@ const accountFormSchema = z.object({
     required_error: 'A date of birth is required.',
   }),
   role: z.string({
-    required_error: 'Please select a language.',
+    required_error: 'Please select a role.',
   }),
   bio: z.string().max(160).min(4),
 })
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
-// This can come from your database or API.
+// Initial empty values that will be populated after fetching user data
 const defaultValues: Partial<AccountFormValues> = {
-  // name: "Your name",
+  name: '',
   dob: new Date(),
+  role: '',
   bio: '',
 }
 
 export function AccountForm() {
+  const [isLoading, setIsLoading] = useState(true)
+  const form = useForm<AccountFormValues>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues,
+    // Don't validate or submit until data is loaded
+    mode: 'onSubmit',
+  })
+
   const getUser = async () => {
     try {
+      setIsLoading(true)
       const {
         data: { user },
         error,
@@ -83,29 +94,26 @@ export function AccountForm() {
         throw error.message
       }
       if (user) {
-        // console.log(user)
-        // setUser(user)
-
         form.reset({
-          name: user.user_metadata.name,
-          dob: user.user_metadata.personal_details.dob
+          name: user.user_metadata.name || '',
+          dob: user.user_metadata.personal_details?.dob
             ? new Date(user.user_metadata.personal_details.dob)
             : new Date(),
-          role: user.user_metadata.role,
-          bio: user.user_metadata.personal_details.bio,
+          role: user.user_metadata.role || '',
+          bio: user.user_metadata.personal_details?.bio || '',
         })
       }
     } catch (error) {
       console.error(error)
+    } finally {
+      setIsLoading(false)
     }
   }
+
   useEffect(() => {
     getUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  const form = useForm<AccountFormValues>({
-    resolver: zodResolver(accountFormSchema),
-    defaultValues,
-  })
 
   async function onSubmit(data: AccountFormValues) {
     try {
@@ -132,6 +140,10 @@ export function AccountForm() {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  if (isLoading) {
+    return <div>Loading user information...</div>
   }
 
   return (
@@ -218,7 +230,7 @@ export function AccountForm() {
                         !field.value && 'text-muted-foreground',
                       )}>
                       {field.value
-                        ? role.find(language => language.value === field.value)
+                        ? roles.find(language => language.value === field.value)
                             ?.label
                         : 'Select role'}
                       <ChevronsUpDown className="opacity-50" />
@@ -231,7 +243,7 @@ export function AccountForm() {
                     <CommandList>
                       <CommandEmpty>No role found.</CommandEmpty>
                       <CommandGroup>
-                        {role.map(language => (
+                        {roles.map(language => (
                           <CommandItem
                             value={language.label}
                             key={language.value}

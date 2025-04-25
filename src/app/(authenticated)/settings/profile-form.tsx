@@ -58,42 +58,29 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-// This can come from your database or API.
-
 export function ProfileForm() {
-  const [userPrefBusinessProfile, setuserPrefBusinessProfile] = useState<
-    number | undefined
-  >(undefined)
-  const [isCreateBusinessProfileFormOpen, setIsCreateBusinessProfileFormOpen] =
-    useState(false)
-
   const { profiles, selectedProfile, setSelectedProfile } =
     useBusinessProfileContext()
 
-  const [user, setUser] = useState<User | null>(null)
-  const getUser = async () => {
-    try {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser()
-      if (error) {
-        throw error.message
+  const [isCreateBusinessProfileFormOpen, setIsCreateBusinessProfileFormOpen] =
+    useState(false)
+
+  const { data: userData, isPending: userIsPending } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data && data.user) {
+          return data
+        }
+      } catch (error) {
+        console.error(error)
       }
-      if (user) {
-        setuserPrefBusinessProfile(user.user_metadata.profile.business_profile)
-        form.setValue('email', user.email)
-        setUser(user)
-        form.setValue(
-          'business_profile',
-          user.user_metadata.profile.business_profile,
-        )
-        form.setValue('manager_name', selectedProfile?.manager_name)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
+    },
+  })
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -103,72 +90,71 @@ export function ProfileForm() {
       manager_name: '',
     },
     values: {
-      email: user?.email,
-      business_profile: user?.user_metadata.profile.business_profile,
-      manager_name: selectedProfile?.manager_name,
+      email: userData?.user.email ?? '',
+      business_profile:
+        userData?.user.user_metadata?.profile?.business_profile ?? undefined,
+      manager_name: selectedProfile?.manager_name ?? '',
     },
-    mode: 'onChange',
   })
-
-  // const userPrefBusinessProfile = user?.user_metadata.profile.business_profile
-
-  useEffect(() => {
-    getUser()
-  }, [])
 
   const queryClient = useQueryClient()
 
-  async function onSubmit(data: ProfileFormValues) {
-    try {
-      const { data: userData, error } = await supabase.auth.updateUser({
-        data: {
-          profile: {
-            business_profile: data.business_profile,
+  const { mutateAsync: userMutate, isPending: userMutateIsPending } =
+    useMutation({
+      mutationFn: async (values: ProfileFormValues) => {
+        const { data: userData, error } = await supabase.auth.updateUser({
+          data: {
+            profile: {
+              business_profile: values.business_profile,
+            },
           },
-        },
-      })
-
-      const { data: businessProfile, error: businessProfileError } =
-        await supabase
-          .from('business_profiles')
-          .update({
-            manager_name: data.manager_name,
-          })
-          .eq('id', data.business_profile)
-
-      if (error || businessProfileError) {
-        throw error ?? businessProfileError
-      }
-      if (userData || businessProfile) {
-        toast({
-          title: 'Successfully updated profile information',
-          description: userData.user.email,
         })
-        if (userData.user.user_metadata.profile.business_profile) {
-          setuserPrefBusinessProfile(
-            userData.user.user_metadata.profile.business_profile,
-          )
-        }
-        if (data.business_profile) {
-          queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
 
-          const _selectedProfile = profiles.find(
-            profile => profile.id === data.business_profile,
-          )
-          setSelectedProfile(_selectedProfile ?? profiles[0])
+        if (error) {
+          throw error
         }
-      }
+        return userData
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user'] })
+
+        toast({
+          title: 'Business profile updated successfully.',
+          description: 'You can now use this profile for your transactions.',
+        })
+      },
+      onError: error => {
+        toast({
+          title: 'Error updating business profile',
+          description: error.message,
+          variant: 'destructive',
+        })
+      },
+    })
+
+  const onSubmit = async (values: ProfileFormValues) => {
+    const payload = {
+      ...values,
+      business_profile: values.business_profile,
+    }
+
+    if (!userData?.user) {
+      toast({
+        title: 'Please try again later or reload the page.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    try {
+      await userMutate(payload)
+      setSelectedProfile(
+        profiles.find(profile => profile.id === values.business_profile) ||
+          null,
+      )
     } catch (error) {
       console.error(error)
     }
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // registry/new-york})
   }
 
   return (
@@ -188,26 +174,28 @@ export function ProfileForm() {
                       defaultValue={field.value?.toString()}
                       value={field.value?.toString()}>
                       <FormControl>
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-[280px]">
                           <SelectValue placeholder="Select your prefered business profile" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {profiles.map(profile => (
-                          <SelectItem
-                            key={profile.id}
-                            value={profile.id.toString()}>
-                            <div className="flex items-center">
-                              <Avatar className="mr-2 h-5 w-5">
-                                <AvatarImage
-                                  src={`https://avatar.vercel.sh/${profile?.id}.png`}
-                                  className="grayscale"
-                                />
-                              </Avatar>
-                              {profile.shop_name}
-                            </div>
-                          </SelectItem>
-                        ))}
+                        {profiles
+                          .sort((a, b) => a.id - b.id)
+                          .map(profile => (
+                            <SelectItem
+                              key={profile.id}
+                              value={profile.id.toString()}>
+                              <div className="flex items-center">
+                                <Avatar className="mr-2 h-5 w-5">
+                                  <AvatarImage
+                                    src={`https://avatar.vercel.sh/${profile?.id}.png`}
+                                    className="grayscale"
+                                  />
+                                </Avatar>
+                                {profile.shop_name}
+                              </div>
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <Button
@@ -227,7 +215,7 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-            {!userPrefBusinessProfile || userPrefBusinessProfile === 2 ? (
+            {(!selectedProfile || selectedProfile.id) === 2 ? (
               <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
                 <Info className="w-6 self-start" />
                 <p>
@@ -245,7 +233,7 @@ export function ProfileForm() {
                     <div>City</div>
                     <div>State</div>
                     <div>Zip code</div>
-                    <div>Manager name</div>
+                    {/* <div>Manager name</div> */}
                   </div>
                   <div className="space-y-4 divide-y">
                     <div>{selectedProfile.shop_name}</div>
@@ -253,7 +241,7 @@ export function ProfileForm() {
                     <div>{selectedProfile.city}</div>
                     <div>{selectedProfile.state}</div>
                     <div>{selectedProfile.zip_code}</div>
-                    <div>
+                    {/* <div>
                       <FormField
                         control={form.control}
                         name="manager_name"
@@ -274,7 +262,7 @@ export function ProfileForm() {
                           </FormItem>
                         )}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               )
@@ -300,6 +288,36 @@ export function ProfileForm() {
           <Button type="submit">Update business profile</Button>
         </form>
       </Form>
+      {/* <Button
+        onClick={() => {
+          console.log('Form values:', form.getValues())
+          console.log('Form errors:', form.formState.errors)
+
+          const result = profileFormSchema.safeParse(form.getValues())
+
+          if (!result.success) {
+            const allErrors = result.error.format()
+
+            // You can access all field errors
+            console.log(allErrors.email?._errors)
+            console.log(allErrors.business_profile?._errors)
+            console.log(allErrors.manager_name?._errors)
+
+            // Add a global error manually if needed
+            return {
+              ...allErrors,
+              global: ['Something went wrong, please review the form.'],
+            }
+          }
+        }}>
+        test
+      </Button>
+      <Button
+        onClick={() => {
+          form.setValue('manager_name', 'test')
+        }}>
+        test2
+      </Button> */}
       <Dialog
         open={isCreateBusinessProfileFormOpen}
         onOpenChange={setIsCreateBusinessProfileFormOpen}>
@@ -314,7 +332,7 @@ export function ProfileForm() {
             </DialogDescription>
             <div className="">
               <BusinessProfileForm
-                userId={user?.id}
+                userId={userData?.user.id}
                 setIsOpen={setIsCreateBusinessProfileFormOpen}
               />
             </div>
