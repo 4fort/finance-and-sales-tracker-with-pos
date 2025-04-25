@@ -39,7 +39,7 @@ export default function POSPage() {
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false)
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null)
   const [orderHistory, setOrderHistory] = useState<Order[]>(
-    typeof window !== 'undefined'
+    typeof window !== 'undefined' && !isUserDataPending
       ? JSON.parse(
           localStorage.getItem(
             `${`order_history-${userData?.user.id}`}-order_history`,

@@ -14,6 +14,8 @@ import { Printer, Send, ShoppingBag } from 'lucide-react'
 import type { Order } from '@/types/POS'
 import { format } from 'date-fns'
 import { useBusinessProfileContext } from '@/app/business-profile-context'
+import { supabase } from '@/lib/supabase'
+import { useQuery } from '@tanstack/react-query'
 
 interface ReceiptModalProps {
   isOpen: boolean
@@ -22,6 +24,24 @@ interface ReceiptModalProps {
 }
 
 export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
+  const { data: userData, isPending: userIsPending } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser()
+        if (error) {
+          console.error(error)
+        }
+        if (data) {
+          console.log('data user', data)
+          return data
+        }
+      } catch (error: any) {
+        console.error(error)
+      }
+    },
+  })
+
   const { selectedProfile } = useBusinessProfileContext()
   if (!order) return null
 
@@ -52,7 +72,7 @@ export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
               {selectedProfile?.zip_code}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Served by <strong>{selectedProfile?.manager_name}</strong>
+              Served by <strong>{userData?.user?.user_metadata.name}</strong>
             </p>
           </div>
 
