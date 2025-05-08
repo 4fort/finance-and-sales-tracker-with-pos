@@ -42,7 +42,7 @@ export function ProductGrid({ products, onProductSelect }: ProductGridProps) {
             onClick={() =>
               status !== 'out-of-stock' && onProductSelect(product)
             }>
-            <CardContent className="p-3 flex flex-col items-center">
+            <CardContent className="relative h-full p-3 flex flex-col items-center">
               {/* <div className="relative w-full aspect-square mb-2">
                 <Image
                   src={product.image || '/placeholder.svg?height=100&width=100'}
@@ -63,10 +63,10 @@ export function ProductGrid({ products, onProductSelect }: ProductGridProps) {
                   Out of Stock
                 </Badge>
               )}
-              <h3 className="font-medium text-center line-clamp-2 h-10">
+              <h3 className="font-medium text-center line-clamp-2 min-h-10">
                 {product.product_name}
               </h3>
-              <p className="font-bold text-base mt-1">
+              <p className="font-bold text-base mt-auto">
                 {product.unit_price.toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'PHP',
