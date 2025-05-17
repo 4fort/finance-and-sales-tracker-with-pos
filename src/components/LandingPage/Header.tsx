@@ -12,7 +12,7 @@ export function Header() {
         <Link className="flex items-center justify-center" href="#">
           <ShoppingCart className="h-6 w-6 mr-2 text-white" />
           <span className=" text-xl font-bold text-white">
-            FASTracking System
+            COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM
           </span>
         </Link>
         <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 text-white">

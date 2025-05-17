@@ -9,7 +9,7 @@ export function ModernAdminFooter() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <div className="space-y-6">
           <h3 className="text-2xl font-bold text-gray-900">
-            FASTracking System
+            COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM
           </h3>
           <p className="text-sm leading-relaxed">
             Empowering e-commerce businesses with cutting-edge admin solutions.
@@ -94,7 +94,7 @@ export function ModernAdminFooter() {
               <a
                 href="mailto:support@acme-admin.com"
                 className="hover:text-gray-900 transition-colors duration-300">
-                support@fastrackingsystem.com
+                support@cotejarstoresystem.com
               </a>
             </li>
           </ul>
@@ -103,7 +103,8 @@ export function ModernAdminFooter() {
       <div className="mt-12 pt-8 border-t border-gray-200">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm">
-            &copy; 2024 FASTracking System Solutions. All rights reserved.
+            &copy; 2024 COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM Solutions.
+            All rights reserved.
           </p>
           <ul className="flex space-x-6 mt-4 md:mt-0">
             <li>

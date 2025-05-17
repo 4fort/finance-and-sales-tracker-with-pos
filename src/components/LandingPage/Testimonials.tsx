@@ -24,7 +24,7 @@ const testimonials = [
     name: 'Alex Johnson',
     role: 'E-commerce Manager',
     content:
-      'FASTracking System has revolutionized how we manage our online store. The analytics are top-notch!',
+      'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM has revolutionized how we manage our online store. The analytics are top-notch!',
     image_url:
       'https://media6.ppl-media.com/mediafiles/blogs/shutterstock_1491969896_9198201c3a.jpg',
   },
@@ -73,8 +73,8 @@ const Header = () => (
       What Our Users Say
     </h2>
     <p className="text-center max-w-[600px] mx-auto mt-4 text-gray-700 dark:text-gray-300 md:text-xl">
-      Discover how FASTracking System has empowered businesses to grow with our
-      powerful tools and customer-focused solutions
+      Discover how COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM has empowered
+      businesses to grow with our powerful tools and customer-focused solutions
     </p>
   </div>
 )

@@ -8,7 +8,7 @@ import { BusinessProfileContextProvider } from './business-profile-context'
 const nunito = Nunito({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'FASTracking System',
+  title: 'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM',
   description: 'Created by DevRonin',
 }
 
