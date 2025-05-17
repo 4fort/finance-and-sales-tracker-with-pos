@@ -234,7 +234,7 @@ export default function POSPage() {
 
   return (
     <>
-      <div className="flex flex-1 h-full flex-col md:flex-row">
+      <div className="grow flex flex-1 h-full flex-col md:flex-row">
         {/* Left side - Product selection */}
         <div className="flex flex-col w-full md:w-2/3 p-4 border-r">
           <div className="flex justify-between items-center mb-4">

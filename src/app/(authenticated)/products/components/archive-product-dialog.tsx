@@ -24,7 +24,7 @@ export default function ArchiveProductDialog() {
       if (!selectedProduct) return
       const data = await productActions.archive(selectedProduct.product_id)
       if (!data) {
-        throw new Error('Failed to archive product')
+        throw new Error('Failed to delete product')
       }
       return
     },
@@ -46,13 +46,13 @@ export default function ArchiveProductDialog() {
           <DialogDescription className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
             <Info className="w-6 self-start" />
             <p>
-              Products that are archived will no longer be visible in the main
+              Products that are deleted will no longer be visible in the main
               product list and will not be counted in the statistics.
             </p>
           </DialogDescription>
         </DialogHeader>
         <p>
-          You are about to archive{' '}
+          You are about to delete{' '}
           <span className="font-bold">{selectedProduct?.product_name}</span>.
           You can still recover this product later.
         </p>
@@ -63,7 +63,7 @@ export default function ArchiveProductDialog() {
               handleArchive()
             }}
             disabled={isPending}>
-            Archive
+            Delete
           </Button>
           <Button
             variant="outline"
