@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { UserCog, MoreHorizontal, PlusIcon, CheckCircle } from 'lucide-react' // Added CheckCircle
+import { UserCog, MoreHorizontal, PlusIcon, CheckCircle } from 'lucide-react'
 import {
   Popover,
   PopoverContent,
@@ -24,19 +24,25 @@ import {
 } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import React, { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { BusinessProfileForm } from '../profile-form'
-import { BusinessProfile } from '@/app/business-profile-context' // Added BusinessProfile type
+import { BusinessProfile } from '@/app/business-profile-context'
+import { useOwnerConfirmation } from '@/components/owner-confirmation'
+import { useToast } from '@/hooks/use-toast'
 
 export default function ManageBusinessProfile() {
   const { profiles, selectedProfile, setSelectedProfile } =
     useBusinessProfileContext()
   const [isCreateProfileOpen, setIsCreateProfileOpen] = useState(false)
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false) // State for edit dialog
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
   const [editingProfile, setEditingProfile] = useState<BusinessProfile | null>(
     null,
-  ) // State for profile being edited
+  )
+  const { toast } = useToast()
+
+  const { requestConfirmation, OwnerConfirmationDialogComponent } =
+    useOwnerConfirmation()
 
   const { data: currentUser, isLoading: isUserLoading } = useQuery({
     queryKey: ['currentUserForProfileForm'],
@@ -54,23 +60,80 @@ export default function ManageBusinessProfile() {
     },
   })
 
+  const queryClient = useQueryClient()
+
+  const {
+    mutateAsync: deleteProfileMutateAsync,
+    isPending: isDeletingProfile,
+  } = useMutation({
+    mutationFn: async (profileId: number) => {
+      const { error } = await supabase
+        .from('business_profiles')
+        .delete()
+        .eq('id', profileId)
+      if (error) {
+        console.error('Error deleting profile:', error.message)
+        throw new Error(`Failed to delete profile: ${error.message}`)
+      }
+      return true
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Profile Deleted',
+        description: 'The profile has been deleted successfully.',
+        variant: 'default',
+      })
+      queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Profile Deletion Failed',
+        description: error.message,
+        variant: 'destructive',
+      })
+    },
+  })
+
   const handleOpenEditDialog = (profile: BusinessProfile) => {
     setEditingProfile(profile)
     setIsEditProfileOpen(true)
   }
 
-  // TODO: Implement edit and delete functions
-  const handleEditProfile = (profileId: number) => {
-    console.log('Edit profile:', profileId)
-    // Add logic to open an edit dialog or navigate to an edit page
-  }
+  const handleDeleteProfile = async (profileId: number) => {
+    const confirmed = await requestConfirmation()
+    if (confirmed) {
+      console.log('Delete profile:', profileId)
+      // TODO: Implement actual Supabase call to delete the profile
+      toast({
+        title: 'Profile Deletion Initiated',
+        description: `Password confirmed. Profile ${profileId} would be deleted`,
+        variant: 'default',
+      })
 
-  const handleDeleteProfile = (profileId: number) => {
-    console.log('Delete profile:', profileId)
+      try {
+        await deleteProfileMutateAsync(profileId)
+      } catch (error) {
+        console.error('Error deleting profile:', error)
+        toast({
+          title: 'Profile Deletion Failed',
+          description: 'An error occurred while deleting the profile.',
+          variant: 'destructive',
+        })
+      }
+    } else {
+      console.log('Deletion cancelled for profile:', profileId)
+      toast({
+        title: 'Deletion Cancelled',
+        description: 'You chose not to proceed with deleting the profile.',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
     <>
+      <OwnerConfirmationDialogComponent />
+
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" type="button">
@@ -180,7 +243,7 @@ export default function ManageBusinessProfile() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleOpenEditDialog(profile)} // Updated onClick
+                              onClick={() => handleOpenEditDialog(profile)}
                               className="w-full justify-start">
                               Edit
                             </Button>

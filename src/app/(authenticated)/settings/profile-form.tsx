@@ -307,7 +307,15 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Save</Button>
+          <Button
+            type="submit"
+            className={cn(
+              userData?.user.user_metadata?.profile?.business_profile !==
+                form.watch('business_profile') &&
+                'ring ring-ring ring-offset-2',
+            )}>
+            Save
+          </Button>
         </form>
       </Form>
       {/* <Button
