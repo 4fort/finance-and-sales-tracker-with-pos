@@ -89,9 +89,11 @@ export function OrderSummary({
                           }
                           if (
                             parseInt(e.target.value) >
-                            item.product.sold_quantity
+                            item.product.quantity_in_stock
                           ) {
-                            e.target.value = String(item.product.sold_quantity)
+                            e.target.value = String(
+                              item.product.quantity_in_stock,
+                            )
                           }
 
                           onUpdateQuantity(
@@ -109,14 +111,14 @@ export function OrderSummary({
                         }}
                         className="text-center border-none focus:ring-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         min={1}
-                        max={item.product.sold_quantity}
+                        max={item.product.quantity_in_stock}
                       />
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-none"
                         onClick={() => {
-                          if (item.quantity >= item.product.sold_quantity) {
+                          if (item.quantity >= item.product.quantity_in_stock) {
                             return
                           }
                           onUpdateQuantity(
