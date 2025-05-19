@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { UserCog, MoreHorizontal, PlusIcon } from 'lucide-react'
+import { UserCog, MoreHorizontal, PlusIcon, CheckCircle } from 'lucide-react' // Added CheckCircle
 import {
   Popover,
   PopoverContent,
@@ -80,6 +80,10 @@ export default function ManageBusinessProfile() {
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>Manage Business Profiles</DialogTitle>
+            <DialogDescription>
+              Don&apos;t forget to click save when selecting a new profile to
+              make it default.
+            </DialogDescription>
           </DialogHeader>
 
           {/* Toolbar for creating a new profile */}
@@ -124,7 +128,11 @@ export default function ManageBusinessProfile() {
               </TableHeader>
               <TableBody>
                 {profiles.map(profile => (
-                  <TableRow key={profile.id}>
+                  <TableRow
+                    key={profile.id}
+                    className={
+                      selectedProfile?.id === profile.id ? 'bg-muted/50' : ''
+                    }>
                     <TableCell>
                       <Avatar className="h-8 w-8">
                         <AvatarImage
@@ -142,7 +150,14 @@ export default function ManageBusinessProfile() {
                         </AvatarFallback>
                       </Avatar>
                     </TableCell>
-                    <TableCell>{profile.shop_name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        {profile.shop_name}
+                        {selectedProfile?.id === profile.id && (
+                          <CheckCircle className="ml-2 h-5 w-5 text-green-500" />
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Popover>
                         <PopoverTrigger asChild>

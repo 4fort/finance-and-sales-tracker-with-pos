@@ -42,7 +42,6 @@ import {
   useBusinessProfileContext,
 } from '@/app/business-profile-context'
 import { Info, Plus } from 'lucide-react'
-import { BusinessProfileSwitcher } from '@/components/Dashboard/business-profile-switcher'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import ManageBusinessProfile from './components/manage-business-profile'
 
@@ -93,7 +92,9 @@ export function ProfileForm() {
     values: {
       email: userData?.user.email ?? '',
       business_profile:
-        userData?.user.user_metadata?.profile?.business_profile ?? undefined,
+        selectedProfile?.id ??
+        userData?.user.user_metadata?.profile?.business_profile ??
+        undefined,
       manager_name: selectedProfile?.manager_name ?? '',
     },
   })
@@ -158,6 +159,12 @@ export function ProfileForm() {
     }
   }
 
+  console.log(
+    'Form values:',
+    form.getValues(),
+    userData?.user.user_metadata?.profile?.business_profile,
+  )
+
   return (
     <>
       <Form {...form}>
@@ -218,10 +225,22 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-            {(!selectedProfile || selectedProfile.id) === 2 ? (
-              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
-                <Info className="w-6 self-start" />
-                <p>
+
+            {userData?.user.user_metadata?.profile?.business_profile !==
+              form.watch('business_profile') && (
+              <div className="flex items-center space-x-2 text-blue-700 bg-blue-100 border border-blue-400 p-2 rounded-md mt-2">
+                <Info className="h-5 w-5 self-start flex-shrink-0" />
+                <p className="text-sm">
+                  Your active business profile selection has changed. Click
+                  &apos;Save&apos; to make this your default.
+                </p>
+              </div>
+            )}
+
+            {!selectedProfile || selectedProfile.id === 2 ? (
+              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md mt-2">
+                <Info className="h-5 w-5 self-start flex-shrink-0" />
+                <p className="text-sm">
                   You are currently using the default business profile. It is
                   advised to create or use a custom business profile to manage
                   your business information effectively.
@@ -288,7 +307,7 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Update business profile</Button>
+          <Button type="submit">Save</Button>
         </form>
       </Form>
       {/* <Button
@@ -428,9 +447,11 @@ export function BusinessProfileForm({
         return data
       }
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast({
-        title: `Business profile ${mode === 'edit' ? 'updated' : 'created'} successfully.`,
+        title: `Business profile ${
+          mode === 'edit' ? 'updated' : 'created'
+        } successfully.`,
         description: `You can now use this profile for your transactions.`,
       })
       queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
@@ -446,7 +467,9 @@ export function BusinessProfileForm({
     },
     onError: error => {
       toast({
-        title: `Error ${mode === 'edit' ? 'updating' : 'creating'} business profile`,
+        title: `Error ${
+          mode === 'edit' ? 'updating' : 'creating'
+        } business profile`,
         description: error.message,
         variant: 'destructive',
       })
@@ -454,15 +477,17 @@ export function BusinessProfileForm({
   })
 
   const onSubmit = async (values: BusinessProfileFormValues) => {
-    const payload: Partial<BusinessProfileFormValues & { owner_id?: string }> = {
-      ...values,
-    }
+    const payload: Partial<BusinessProfileFormValues & { owner_id?: string }> =
+      {
+        ...values,
+      }
 
     if (mode === 'create') {
       payload.owner_id = userId
       if (!userId) {
         toast({
-          title: 'User ID is missing. Please try again later or reload the page.',
+          title:
+            'User ID is missing. Please try again later or reload the page.',
           variant: 'destructive',
         })
         return
