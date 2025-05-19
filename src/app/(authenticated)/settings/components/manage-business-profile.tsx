@@ -16,29 +16,45 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { UserCog, MoreHorizontal } from 'lucide-react'
+import { UserCog, MoreHorizontal, PlusIcon } from 'lucide-react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-
-import React from 'react'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
+import { BusinessProfileForm } from '../profile-form'
 
 export default function ManageBusinessProfile() {
   const { profiles, selectedProfile, setSelectedProfile } =
     useBusinessProfileContext()
+  const [isCreateProfileOpen, setIsCreateProfileOpen] = useState(false)
 
-  // TODO: Implement edit and delete functions
+  const { data: currentUser, isLoading: isUserLoading } = useQuery({
+    queryKey: ['currentUserForProfileForm'],
+    queryFn: async () => {
+      const { data: authData, error } = await supabase.auth.getUser()
+      if (error) {
+        console.error('Error fetching user:', error.message)
+        throw new Error(`Failed to fetch user: ${error.message}`)
+      }
+      if (!authData || !authData.user) {
+        console.error('User not authenticated or not found.')
+        throw new Error('User not authenticated or not found.')
+      }
+      return authData.user
+    },
+  })
+
   const handleEditProfile = (profileId: number) => {
     console.log('Edit profile:', profileId)
-    // Add logic to open an edit dialog or navigate to an edit page
   }
 
   const handleDeleteProfile = (profileId: number) => {
     console.log('Delete profile:', profileId)
-    // Add logic to confirm and delete the profile
   }
 
   return (
@@ -49,16 +65,47 @@ export default function ManageBusinessProfile() {
             <UserCog className="h-4 w-4 mr-2" /> Manage Business Profiles
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>Manage Business Profiles</DialogTitle>
-            {/* <div className=""></div> */}
           </DialogHeader>
-          <div className="mt-4">
+
+          {/* Toolbar for creating a new profile */}
+          <div className="flex justify-end my-4">
+            <Dialog
+              open={isCreateProfileOpen}
+              onOpenChange={setIsCreateProfileOpen}>
+              <DialogTrigger asChild>
+                <Button variant="default">
+                  <PlusIcon className="h-4 w-4 mr-2" /> Create New Profile
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Create New Business Profile</DialogTitle>
+                  <DialogDescription>
+                    Fill in the details to create a new business profile.
+                  </DialogDescription>
+                </DialogHeader>
+                {isUserLoading ? (
+                  <p>Loading user information...</p>
+                ) : currentUser?.id ? (
+                  <BusinessProfileForm
+                    userId={currentUser.id}
+                    setIsOpen={setIsCreateProfileOpen}
+                  />
+                ) : (
+                  <p>Could not load user information. Please try again.</p>
+                )}
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="mt-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead></TableHead> {/* Added TableHead for Avatar */}
+                  <TableHead></TableHead>
                   <TableHead>Profile Name</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -111,7 +158,7 @@ export default function ManageBusinessProfile() {
                               Edit
                             </Button>
                             <Button
-                              variant="destructive" // Or "ghost" if you prefer less emphasis
+                              variant="destructive"
                               size="sm"
                               onClick={() => handleDeleteProfile(profile.id)}
                               className="w-full justify-start">

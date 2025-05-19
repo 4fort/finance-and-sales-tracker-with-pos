@@ -369,7 +369,7 @@ const businessProfileFormSchema = z.object({
   manager_name: z.string().optional(),
 })
 
-function BusinessProfileForm({
+export function BusinessProfileForm({
   userId,
   setIsOpen,
 }: {
