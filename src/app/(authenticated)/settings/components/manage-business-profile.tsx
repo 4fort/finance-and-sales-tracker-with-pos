@@ -27,11 +27,16 @@ import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { BusinessProfileForm } from '../profile-form'
+import { BusinessProfile } from '@/app/business-profile-context' // Added BusinessProfile type
 
 export default function ManageBusinessProfile() {
   const { profiles, selectedProfile, setSelectedProfile } =
     useBusinessProfileContext()
   const [isCreateProfileOpen, setIsCreateProfileOpen] = useState(false)
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false) // State for edit dialog
+  const [editingProfile, setEditingProfile] = useState<BusinessProfile | null>(
+    null,
+  ) // State for profile being edited
 
   const { data: currentUser, isLoading: isUserLoading } = useQuery({
     queryKey: ['currentUserForProfileForm'],
@@ -49,8 +54,15 @@ export default function ManageBusinessProfile() {
     },
   })
 
+  const handleOpenEditDialog = (profile: BusinessProfile) => {
+    setEditingProfile(profile)
+    setIsEditProfileOpen(true)
+  }
+
+  // TODO: Implement edit and delete functions
   const handleEditProfile = (profileId: number) => {
     console.log('Edit profile:', profileId)
+    // Add logic to open an edit dialog or navigate to an edit page
   }
 
   const handleDeleteProfile = (profileId: number) => {
@@ -153,7 +165,7 @@ export default function ManageBusinessProfile() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleEditProfile(profile.id)}
+                              onClick={() => handleOpenEditDialog(profile)} // Updated onClick
                               className="w-full justify-start">
                               Edit
                             </Button>
@@ -173,6 +185,34 @@ export default function ManageBusinessProfile() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Edit Profile Dialog */}
+          {editingProfile && (
+            <Dialog
+              open={isEditProfileOpen}
+              onOpenChange={setIsEditProfileOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Edit Business Profile</DialogTitle>
+                  <DialogDescription>
+                    Update the details for {editingProfile.shop_name}.
+                  </DialogDescription>
+                </DialogHeader>
+                {isUserLoading ? (
+                  <p>Loading user information...</p>
+                ) : currentUser?.id ? (
+                  <BusinessProfileForm
+                    userId={currentUser.id}
+                    setIsOpen={setIsEditProfileOpen}
+                    mode="edit"
+                    initialData={editingProfile}
+                  />
+                ) : (
+                  <p>Could not load user information. Please try again.</p>
+                )}
+              </DialogContent>
+            </Dialog>
+          )}
         </DialogContent>
       </Dialog>
     </>

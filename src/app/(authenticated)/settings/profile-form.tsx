@@ -367,20 +367,25 @@ const businessProfileFormSchema = z.object({
     message: 'Please enter a zip code.',
   }),
   manager_name: z.string().optional(),
+  id: z.number().optional(), // Added id for editing
 })
 
 export function BusinessProfileForm({
   userId,
   setIsOpen,
+  initialData, // Added initialData
+  mode = 'create', // Added mode, defaults to 'create'
 }: {
   userId?: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  initialData?: BusinessProfileFormValues // Added initialData type
+  mode?: 'create' | 'edit' // Added mode type
 }) {
   const queryClient = useQueryClient()
 
   const form = useForm<BusinessProfileFormValues>({
     resolver: zodResolver(businessProfileFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       shop_name: '',
       city: '',
       state: '',
@@ -390,32 +395,58 @@ export function BusinessProfileForm({
     },
   })
 
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData)
+    }
+  }, [initialData, form])
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (values: BusinessProfileFormValues) => {
       const payload = {
         ...values,
-        owner_id: userId,
+        owner_id: userId, // owner_id is still needed for creation, might not be for update depending on policy
       }
-      const { data, error } = await supabase
-        .from('business_profiles')
-        .insert([payload])
-        .select()
-      if (error) {
-        throw error
+      if (mode === 'edit' && values.id) {
+        const { data, error } = await supabase
+          .from('business_profiles')
+          .update(payload)
+          .eq('id', values.id)
+          .select()
+        if (error) {
+          throw error
+        }
+        return data
+      } else {
+        const { data, error } = await supabase
+          .from('business_profiles')
+          .insert([payload])
+          .select()
+        if (error) {
+          throw error
+        }
+        return data
       }
-      return data
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: 'Business profile created successfully.',
-        description: 'You can now use this profile for your transactions.',
+        title: `Business profile ${mode === 'edit' ? 'updated' : 'created'} successfully.`,
+        description: `You can now use this profile for your transactions.`,
       })
       queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
+      // Potentially update selected profile if the edited one was selected
+      if (mode === 'edit' && data && data[0]) {
+        const updatedProfile = data[0] as BusinessProfile
+        // If you have access to setSelectedProfile and selectedProfile here, you could update it:
+        // if (selectedProfile?.id === updatedProfile.id) {
+        //   setSelectedProfile(updatedProfile);
+        // }
+      }
       setIsOpen(false)
     },
     onError: error => {
       toast({
-        title: 'Error creating business profile',
+        title: `Error ${mode === 'edit' ? 'updating' : 'creating'} business profile`,
         description: error.message,
         variant: 'destructive',
       })
@@ -423,22 +454,32 @@ export function BusinessProfileForm({
   })
 
   const onSubmit = async (values: BusinessProfileFormValues) => {
-    const payload = {
+    const payload: Partial<BusinessProfileFormValues & { owner_id?: string }> = {
       ...values,
-      owner_id: userId,
     }
 
-    if (!userId) {
+    if (mode === 'create') {
+      payload.owner_id = userId
+      if (!userId) {
+        toast({
+          title: 'User ID is missing. Please try again later or reload the page.',
+          variant: 'destructive',
+        })
+        return
+      }
+    } else if (mode === 'edit' && !values.id) {
       toast({
-        title: 'Please try again later or reload the page.',
+        title: 'Profile ID is missing for update. Please try again.',
         variant: 'destructive',
       })
       return
     }
 
     try {
-      await mutateAsync(payload)
-      form.reset()
+      await mutateAsync(payload as BusinessProfileFormValues) // Cast because owner_id is optional in schema but needed for insert
+      if (mode === 'create') {
+        form.reset()
+      }
     } catch (error) {
       console.error(error)
     }
@@ -539,7 +580,7 @@ export function BusinessProfileForm({
         </div>
 
         <Button type="submit" disabled={isPending}>
-          Create Business Profile
+          {mode === 'edit' ? 'Update' : 'Create'} Business Profile
         </Button>
       </form>
     </Form>
