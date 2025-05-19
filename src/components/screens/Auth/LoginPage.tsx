@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 import axios, { AxiosError } from 'axios'
@@ -164,12 +163,12 @@ export function LoginPage() {
               </form>
             </Form>
           </div>
-          <div className={styles['form-footer']}>
+          {/* <div className={styles['form-footer']}>
             Don&apos;t have an account?{' '}
             <Link href="/register" className={styles['form-footer-link']}>
               Sign up
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className={styles['right-column']}>
