@@ -68,25 +68,62 @@ export function OrderSummary({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-none"
-                        onClick={() =>
+                        onClick={() => {
+                          if (item.quantity <= 0) {
+                            return
+                          }
                           onUpdateQuantity(
                             item.product.product_id,
                             item.quantity - 1,
                           )
-                        }>
+                        }}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="w-8 text-center">{item.quantity}</span>
+                      {/* <span className="w-8 text-center">{item.quantity}</span> */}
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={e => {
+                          if (e.target.value === '') {
+                            return
+                          }
+                          if (
+                            parseInt(e.target.value) >
+                            item.product.sold_quantity
+                          ) {
+                            e.target.value = String(item.product.sold_quantity)
+                          }
+
+                          onUpdateQuantity(
+                            item.product.product_id,
+                            Number(e.target.value),
+                          )
+                        }}
+                        onBlur={e => {
+                          if (e.target.value === '') {
+                            onUpdateQuantity(item.product.product_id, 0)
+                          }
+                        }}
+                        onFocus={e => {
+                          e.target.select()
+                        }}
+                        className="text-center border-none focus:ring-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        min={1}
+                        max={item.product.sold_quantity}
+                      />
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-none"
-                        onClick={() =>
+                        onClick={() => {
+                          if (item.quantity >= item.product.sold_quantity) {
+                            return
+                          }
                           onUpdateQuantity(
                             item.product.product_id,
                             item.quantity + 1,
                           )
-                        }>
+                        }}>
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
