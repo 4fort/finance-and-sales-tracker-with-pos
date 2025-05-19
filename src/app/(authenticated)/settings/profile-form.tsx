@@ -44,6 +44,7 @@ import {
 import { Info, Plus } from 'lucide-react'
 import { BusinessProfileSwitcher } from '@/components/Dashboard/business-profile-switcher'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import ManageBusinessProfile from './components/manage-business-profile'
 
 const profileFormSchema = z.object({
   email: z
@@ -198,13 +199,15 @@ export function ProfileForm() {
                           ))}
                       </SelectContent>
                     </Select>
-                    <Button
+                    {/* <Button
                       variant="outline"
                       type="button"
                       onClick={() => setIsCreateBusinessProfileFormOpen(true)}>
                       <Plus className="h-4 w-4 mr-2" /> Create custom business
                       profile
-                    </Button>
+                    </Button> */}
+
+                    <ManageBusinessProfile />
                   </div>
                   <FormDescription>
                     This is the business profile that will be used for your
