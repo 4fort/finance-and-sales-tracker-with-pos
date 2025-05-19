@@ -22,6 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 import React from 'react'
 
@@ -57,6 +58,7 @@ export default function ManageBusinessProfile() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead></TableHead> {/* Added TableHead for Avatar */}
                   <TableHead>Profile Name</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -64,6 +66,23 @@ export default function ManageBusinessProfile() {
               <TableBody>
                 {profiles.map(profile => (
                   <TableRow key={profile.id}>
+                    <TableCell>
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={`https://avatar.vercel.sh/${profile.id}.png`}
+                          alt={profile.shop_name}
+                          className="grayscale"
+                        />
+                        <AvatarFallback>
+                          {profile.shop_name
+                            ?.split(' ')
+                            .map(n => n[0])
+                            .join('')
+                            .substring(0, 2)
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
                     <TableCell>{profile.shop_name}</TableCell>
                     <TableCell>
                       <Popover>
