@@ -9,12 +9,14 @@ interface PrintButtonProps {
   reportTitle: string
 }
 
-export function PrintButton({ reportTitle = 'Income Report' }: PrintButtonProps) {
+export function PrintButton({
+  reportTitle = 'Income Report',
+}: PrintButtonProps) {
   const { toast } = useToast()
-  
+
   const handlePrint = () => {
     toast({
-      title: "Preparing print view",
+      title: 'Preparing print view',
       description: "Your browser's print dialog will open shortly.",
     })
     // Add print-specific styles
@@ -22,16 +24,17 @@ export function PrintButton({ reportTitle = 'Income Report' }: PrintButtonProps)
     style.innerHTML = `
       @media print {
         body * {
-          visibility: hidden;
+          visibility: hidden !important;
         }
         .print-section, .print-section * {
-          visibility: visible;
+          visibility: visible !important;
         }
         .print-section {
           position: absolute;
           left: 0;
           top: 0;
           width: 100%;
+          padding: 20mm; /* Add internal padding for content instead of page margins */
         }
         .no-print {
           display: none !important;
@@ -39,7 +42,7 @@ export function PrintButton({ reportTitle = 'Income Report' }: PrintButtonProps)
         /* Additional print styles */
         @page {
           size: A4;
-          margin: 0.5in;
+          margin: 0mm !important;
         }
         h1 {
           text-align: center;
@@ -94,12 +97,11 @@ export function PrintButton({ reportTitle = 'Income Report' }: PrintButtonProps)
   }
 
   return (
-    <Button 
-      onClick={handlePrint} 
-      variant="outline" 
-      size="sm" 
-      className="no-print ml-auto bg-white hover:bg-gray-100"
-    >
+    <Button
+      onClick={handlePrint}
+      variant="outline"
+      size="sm"
+      className="no-print ml-auto bg-white hover:bg-gray-100">
       <Printer className="mr-2 h-4 w-4" />
       Print Report
     </Button>

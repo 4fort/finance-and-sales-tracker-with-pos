@@ -1,16 +1,34 @@
+/* Base page settings with zero margins to prevent browser from adding headers/footers */
 @page {
   size: auto;
-  margin: 0;
+  margin: 0mm !important;
 }
 
-@print {
-  @page :footer {
-    display: none;
-  }
+/* This helps prevent URLs from showing in some browsers */
+html {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
 
-  @page :header {
-    display: none;
-  }
+/* Hide headers and footers during printing */
+@page :first {
+  margin-top: 0mm !important;
+}
+
+@page :left {
+  margin-left: 0mm !important;
+}
+
+@page :right {
+  margin-right: 0mm !important;
+}
+
+@page :footer {
+  display: none !important;
+}
+
+@page :header {
+  display: none !important;
 }
 
 /* Print styles for income reports */
@@ -22,13 +40,13 @@
 
   /* Hide elements not needed in print */
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
   }
 
   /* Only show print section content */
   .print-section,
   .print-section * {
-    visibility: visible;
+    visibility: visible !important;
   }
 
   /* Position the print section at the top */
@@ -37,7 +55,7 @@
     left: 0;
     top: 0;
     width: 100%;
-    padding: 20px;
+    padding: 20mm; /* Use mm for consistent print measurements */
     background-color: white;
   }
 
@@ -46,10 +64,11 @@
     display: none !important;
   }
 
-  /* Set page format and margins */
+  /* Set page format with zero margins to prevent headers/footers */
   @page {
     size: A4;
-    margin: 2cm;
+    /* Remove URL and title from print by setting all margins to zero */
+    margin: 0mm !important;
   }
 
   /* Header styles */
