@@ -65,12 +65,15 @@ export function IncomeChart({
   className,
 }: IncomeChartProps) {
   return (
-    <Card className={cn('col-span-4', className)}>
+    <Card
+      className={cn('col-span-4 print:border-0 print:shadow-none', className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="print:text-lg">{title}</CardTitle>
+        <CardDescription className="print:text-sm">
+          {description}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="pl-2 chart-container">
         <ResponsiveContainer width="100%" height={350}>
           <LineChart
             data={data}

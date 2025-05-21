@@ -26,6 +26,9 @@ import {
 } from './components/stat-tab-contents'
 import { Tab } from '@headlessui/react'
 
+// Import print styles
+import './print-styles.css'
+
 const VIEWS = [
   { label: 'Today', value: 'today' },
   { label: 'This Week', value: 'week' },
@@ -92,7 +95,7 @@ export default function IncomePage() {
 
   return (
     <Tabs defaultValue="today" className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between no-print">
         <TabsList>
           {VIEWS.map(view => (
             <TabsTrigger
@@ -103,18 +106,6 @@ export default function IncomePage() {
             </TabsTrigger>
           ))}
         </TabsList>
-        {/* <div className="flex items-center gap-2">
-              {selectedDate && (
-                <Button onClick={() => setSelectedDate(undefined)}>
-                  Clear
-                </Button>
-              )}
-              <DatePicker
-                date={selectedDate}
-                setDate={setSelectedDate}
-                placeholder="Show specific date"
-              />
-            </div> */}
       </div>
       {isUserSalesPending ? (
         <div className="flex items-center justify-center w-full h-full">
@@ -122,19 +113,19 @@ export default function IncomePage() {
         </div>
       ) : (
         <>
-          <TabsContent value="today" className="space-y-2">
+          <TabsContent value="today">
             <StatsToday />
           </TabsContent>
-          <TabsContent value="week" className="space-y-2">
+          <TabsContent value="week">
             <StatsThisWeek />
           </TabsContent>
-          <TabsContent value="month" className="space-y-2">
+          <TabsContent value="month">
             <StatsThisMonth />
           </TabsContent>
-          <TabsContent value="year" className="space-y-2">
+          <TabsContent value="year">
             <StatsThisYear />
           </TabsContent>
-          <div>
+          <div className="no-print">
             <IncomeToolbar />
             {viewSelection?.value === 'items' ? (
               <DataTable columns={itemsColumns} data={itemSales!} />

@@ -5,6 +5,7 @@ import { IncomeChartDataType, IncomeStatsType } from '@/types/Income'
 import { useQuery } from '@tanstack/react-query'
 import { incomeActions } from '../income-actions'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PrintButton } from './print-button'
 
 export function StatsToday() {
   const { data: incomeStats, isPending: isStatsPending } =
@@ -26,23 +27,28 @@ export function StatsToday() {
     },
   })
 
-  console.log('incomeChartData', incomeChartData)
-
   return (
     <div className="flex flex-col gap-4">
-      {isStatsPending ? (
-        <div className="space-y-3">
-          <Skeleton className="h-[125px] w-full" />
-        </div>
-      ) : (
-        <IncomeStats stats={incomeStats!} />
-      )}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold no-print">Today&apos;s Report</h2>
+        <PrintButton reportTitle="Daily Income Report" />
+      </div>
 
-      {isChartDataPending ? (
-        <Skeleton className="h-[350px] w-full" />
-      ) : (
-        <IncomeChart data={incomeChartData!} />
-      )}
+      <div className="print-section space-y-2">
+        {isStatsPending ? (
+          <div className="space-y-3 no-print">
+            <Skeleton className="h-[125px] w-full" />
+          </div>
+        ) : (
+          <IncomeStats stats={incomeStats!} />
+        )}
+
+        {isChartDataPending ? (
+          <Skeleton className="h-[350px] w-full no-print" />
+        ) : (
+          <IncomeChart data={incomeChartData!} />
+        )}
+      </div>
     </div>
   )
 }
@@ -69,19 +75,26 @@ export function StatsThisWeek() {
 
   return (
     <div className="flex flex-col gap-4">
-      {isStatsPending ? (
-        <div className="space-y-3">
-          <Skeleton className="h-[125px] w-full" />
-        </div>
-      ) : (
-        <IncomeStats stats={incomeStats!} />
-      )}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold no-print">Weekly Report</h2>
+        <PrintButton reportTitle="Weekly Income Report" />
+      </div>
 
-      {isChartDataPending ? (
-        <Skeleton className="h-[350px] w-full" />
-      ) : (
-        <IncomeChart data={incomeChartData!} />
-      )}
+      <div className="print-section space-y-2">
+        {isStatsPending ? (
+          <div className="space-y-3 no-print">
+            <Skeleton className="h-[125px] w-full" />
+          </div>
+        ) : (
+          <IncomeStats stats={incomeStats!} />
+        )}
+
+        {isChartDataPending ? (
+          <Skeleton className="h-[350px] w-full no-print" />
+        ) : (
+          <IncomeChart data={incomeChartData!} />
+        )}
+      </div>
     </div>
   )
 }
@@ -108,19 +121,26 @@ export function StatsThisMonth() {
 
   return (
     <div className="flex flex-col gap-4">
-      {isStatsPending ? (
-        <div className="space-y-3">
-          <Skeleton className="h-[125px] w-full" />
-        </div>
-      ) : (
-        <IncomeStats stats={incomeStats!} />
-      )}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold no-print">Monthly Report</h2>
+        <PrintButton reportTitle="Monthly Income Report" />
+      </div>
 
-      {isChartDataPending ? (
-        <Skeleton className="h-[350px] w-full" />
-      ) : (
-        <IncomeChart data={incomeChartData!} />
-      )}
+      <div className="print-section space-y-2">
+        {isStatsPending ? (
+          <div className="space-y-3 no-print">
+            <Skeleton className="h-[125px] w-full" />
+          </div>
+        ) : (
+          <IncomeStats stats={incomeStats!} />
+        )}
+
+        {isChartDataPending ? (
+          <Skeleton className="h-[350px] w-full no-print" />
+        ) : (
+          <IncomeChart data={incomeChartData!} />
+        )}
+      </div>
     </div>
   )
 }
@@ -147,19 +167,26 @@ export function StatsThisYear() {
 
   return (
     <div className="flex flex-col gap-4">
-      {isStatsPending ? (
-        <div className="space-y-3">
-          <Skeleton className="h-[125px] w-full" />
-        </div>
-      ) : (
-        <IncomeStats stats={incomeStats!} />
-      )}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold no-print">Annual Report</h2>
+        <PrintButton reportTitle="Annual Income Report" />
+      </div>
 
-      {isChartDataPending ? (
-        <Skeleton className="h-[350px] w-full" />
-      ) : (
-        <IncomeChart data={incomeChartData!} />
-      )}
+      <div className="print-section space-y-2">
+        {isStatsPending ? (
+          <div className="space-y-3 no-print">
+            <Skeleton className="h-[125px] w-full" />
+          </div>
+        ) : (
+          <IncomeStats stats={incomeStats!} />
+        )}
+
+        {isChartDataPending ? (
+          <Skeleton className="h-[350px] w-full no-print" />
+        ) : (
+          <IncomeChart data={incomeChartData!} />
+        )}
+      </div>
     </div>
   )
 }
