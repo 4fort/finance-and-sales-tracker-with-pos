@@ -122,16 +122,16 @@ export default function IncomePage() {
         </div>
       ) : (
         <>
-          <TabsContent value="today" className="flex flex-col gap-2">
+          <TabsContent value="today" className="space-y-2">
             <StatsToday />
           </TabsContent>
-          <TabsContent value="week" className="flex flex-col gap-2">
+          <TabsContent value="week" className="space-y-2">
             <StatsThisWeek />
           </TabsContent>
-          <TabsContent value="month" className="flex flex-col gap-2">
+          <TabsContent value="month" className="space-y-2">
             <StatsThisMonth />
           </TabsContent>
-          <TabsContent value="year" className="flex flex-col gap-2">
+          <TabsContent value="year" className="space-y-2">
             <StatsThisYear />
           </TabsContent>
           <div>

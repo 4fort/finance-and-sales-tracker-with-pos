@@ -27,7 +27,7 @@ export function StatsToday() {
   })
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       {isStatsPending ? (
         <div className="space-y-3">
           <Skeleton className="h-[125px] w-full" />
@@ -41,7 +41,7 @@ export function StatsToday() {
       ) : (
         <IncomeChart data={incomeChartData!} />
       )}
-    </>
+    </div>
   )
 }
 
