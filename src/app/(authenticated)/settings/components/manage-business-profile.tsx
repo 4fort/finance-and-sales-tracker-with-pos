@@ -94,9 +94,18 @@ export default function ManageBusinessProfile() {
     },
   })
 
-  const handleOpenEditDialog = (profile: BusinessProfile) => {
-    setEditingProfile(profile)
-    setIsEditProfileOpen(true)
+  const handleOpenEditDialog = async (profile: BusinessProfile) => {
+    const confirmed = await requestConfirmation()
+    if (confirmed) {
+      setEditingProfile(profile)
+      setIsEditProfileOpen(true)
+    } else {
+      toast({
+        title: 'Edit Cancelled',
+        description: 'You chose not to proceed with editing the profile.',
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleDeleteProfile = async (profileId: number) => {

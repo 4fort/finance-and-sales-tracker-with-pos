@@ -82,19 +82,19 @@ export function ProfileForm() {
     },
   })
 
+  const userBusinessProfile =
+    userData?.user.user_metadata?.profile.business_profile
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       email: '',
-      business_profile: undefined,
+      business_profile: userBusinessProfile ?? undefined,
       manager_name: '',
     },
     values: {
       email: userData?.user.email ?? '',
-      business_profile:
-        selectedProfile?.id ??
-        userData?.user.user_metadata?.profile?.business_profile ??
-        undefined,
+      business_profile: selectedProfile?.id ?? userBusinessProfile ?? undefined,
       manager_name: selectedProfile?.manager_name ?? '',
     },
   })
@@ -159,11 +159,7 @@ export function ProfileForm() {
     }
   }
 
-  console.log(
-    'Form values:',
-    form.getValues(),
-    userData?.user.user_metadata?.profile?.business_profile,
-  )
+  console.log('Form values:', form.getValues(), userBusinessProfile)
 
   return (
     <>
