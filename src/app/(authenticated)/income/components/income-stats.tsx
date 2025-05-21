@@ -15,7 +15,7 @@ interface IncomeStatsProps {
 }
 
 export default function IncomeStats({ stats }: IncomeStatsProps) {
-  console.log(stats)
+  // console.log(stats)
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>

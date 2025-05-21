@@ -43,15 +43,15 @@ export default function IncomePage() {
   //     },
   //   })
 
-  const { data: incomeChartData, isPending: isChartDataPending } = useQuery<
-    IncomeChartDataType[]
-  >({
-    queryKey: ['income_chart'],
-    queryFn: async () => {
-      const data = await incomeActions.getChartData()
-      return data
-    },
-  })
+  // const { data: incomeChartData, isPending: isChartDataPending } = useQuery<
+  //   IncomeChartDataType[]
+  // >({
+  //   queryKey: ['income_chart'],
+  //   queryFn: async () => {
+  //     const data = await incomeActions.getChartData()
+  //     return data
+  //   },
+  // })
 
   const { data: userSales, isPending: isUserSalesPending } = useQuery<
     IncomeSalesRowType[]
@@ -116,7 +116,7 @@ export default function IncomePage() {
               />
             </div> */}
       </div>
-      {isChartDataPending || isUserSalesPending ? (
+      {isUserSalesPending ? (
         <div className="flex items-center justify-center w-full h-full">
           <p className="text-lg font-semibold">Loading...</p>
         </div>

@@ -21,10 +21,12 @@ export function StatsToday() {
   >({
     queryKey: ['income_chart', 'today'],
     queryFn: async () => {
-      const data = await incomeActions.getChartData()
+      const data = await incomeActions.getChartData('today')
       return data
     },
   })
+
+  console.log('incomeChartData', incomeChartData)
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,7 +62,7 @@ export function StatsThisWeek() {
   >({
     queryKey: ['income_chart', 'week'],
     queryFn: async () => {
-      const data = await incomeActions.getChartData()
+      const data = await incomeActions.getChartData('week')
       return data
     },
   })
@@ -99,7 +101,7 @@ export function StatsThisMonth() {
   >({
     queryKey: ['income_chart', 'month'],
     queryFn: async () => {
-      const data = await incomeActions.getChartData()
+      const data = await incomeActions.getChartData('month')
       return data
     },
   })
@@ -138,7 +140,7 @@ export function StatsThisYear() {
   >({
     queryKey: ['income_chart', 'year'],
     queryFn: async () => {
-      const data = await incomeActions.getChartData()
+      const data = await incomeActions.getChartData('year')
       return data
     },
   })
