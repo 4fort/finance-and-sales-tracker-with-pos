@@ -16,6 +16,7 @@ import {
 } from '@/types/Income'
 import { itemsColumns } from './items-columns'
 import { DatePicker } from '@/components/date-picker'
+import { Button } from '@/components/ui/button'
 
 export default function IncomePage() {
   const { data: incomeStats, isPending: isStatsPending } =
@@ -72,7 +73,7 @@ export default function IncomePage() {
     )
   })
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6 flex flex-col">
@@ -82,11 +83,16 @@ export default function IncomePage() {
         </div>
       ) : (
         <>
-          <DatePicker
-            className="place-self-end"
-            date={selectedDate}
-            setDate={setSelectedDate}
-          />
+          <div className="place-self-end flex items-center gap-2">
+            {selectedDate && (
+              <Button onClick={() => setSelectedDate(undefined)}>Clear</Button>
+            )}
+            <DatePicker
+              date={selectedDate}
+              setDate={setSelectedDate}
+              placeholder="Show specific date"
+            />
+          </div>
           <IncomeStats stats={incomeStats!} />
           <IncomeChart data={incomeChartData!} />
           <div>
