@@ -18,7 +18,7 @@ const DashboardPage = () => {
     useQuery<IncomeStatsType>({
       queryKey: ['income_stats'],
       queryFn: async () => {
-        const data = await incomeActions.getStats()
+        const data = await incomeActions.getStats('week')
         return data
       },
     })
@@ -28,7 +28,7 @@ const DashboardPage = () => {
   >({
     queryKey: ['income_chart'],
     queryFn: async () => {
-      const data = await incomeActions.getChartData()
+      const data = await incomeActions.getChartData('week')
       return data
     },
   })
