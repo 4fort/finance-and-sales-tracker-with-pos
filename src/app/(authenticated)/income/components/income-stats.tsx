@@ -23,7 +23,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground print:text-black" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Total Sales">
             {stats.totalSales.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -59,7 +61,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Total Profit">
             {stats.totalProfit.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -95,7 +99,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <Percent className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Profit Margin">
             {stats.profitMargin.value.toFixed(2)}%
           </div>
           <p className="text-xs text-muted-foreground">
@@ -126,7 +132,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Stocks Sold">
             {stats.stocksSold.value.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground">

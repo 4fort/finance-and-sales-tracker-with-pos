@@ -72,19 +72,153 @@ html {
   }
 
   /* Header styles */
+  .print-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+  }
+
+  .business-info {
+    margin-bottom: 10px;
+  }
+
+  .business-info h2 {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+  }
+
+  .business-info p {
+    font-size: 10pt;
+    margin: 5px 0 0;
+    color: #666;
+  }
+
   h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin: 15px 0;
     font-size: 24pt;
     color: #000;
   }
 
-  /* Date stamp */
+  /* Report metadata */
+  .report-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 10pt;
+    color: #666;
+  }
+
+  .date-range {
+    font-weight: bold;
+  }
+
   .date-printed {
     text-align: right;
     font-size: 10pt;
-    margin-bottom: 20px;
     color: #666;
+  }
+
+  /* Footer styles */
+  .print-footer {
+    position: fixed;
+    bottom: 20mm;
+    width: calc(100% - 40mm);
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    margin-top: 30px;
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #666;
+  }
+
+  .confidential {
+    font-weight: bold;
+  }
+
+  /* Report Summary Styling */
+  .report-summary {
+    margin-top: 30px;
+    border-top: 1px dashed #ccc;
+    padding-top: 20px;
+    page-break-before: auto;
+    page-break-inside: avoid;
+  }
+
+  .summary-container {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .summary-container h3 {
+    margin-top: 0;
+    font-size: 16pt;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .summary-stats {
+    margin: 15px 0;
+  }
+
+  .summary-stats h3 {
+    font-size: 14pt;
+    margin-bottom: 8px;
+  }
+
+  .summary-stats ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  .summary-stats li {
+    margin-bottom: 5px;
+    font-size: 10pt;
+  }
+
+  .trend-up {
+    color: #22c55e;
+    margin-left: 5px;
+    font-size: 8pt;
+    white-space: nowrap;
+  }
+
+  .trend-down {
+    color: #ef4444;
+    margin-left: 5px;
+    font-size: 8pt;
+    white-space: nowrap;
+  }
+
+  .report-metadata {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 10px 0;
+    border-left: 3px solid #888;
+    font-family: monospace;
+  }
+
+  .report-metadata p {
+    margin: 3px 0;
+    font-size: 8pt;
+    color: #555;
+  }
+
+  .summary-note {
+    font-size: 8pt;
+    font-style: italic;
+    color: #777;
+    margin-top: 15px;
+    margin-bottom: 0;
   }
 
   /* Card styling */
