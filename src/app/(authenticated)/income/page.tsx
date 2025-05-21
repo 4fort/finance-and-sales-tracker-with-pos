@@ -15,6 +15,7 @@ import {
   type IncomeStatsType as IncomeStatsType,
 } from '@/types/Income'
 import { itemsColumns } from './items-columns'
+import { DatePicker } from '@/components/date-picker'
 
 export default function IncomePage() {
   const { data: incomeStats, isPending: isStatsPending } =
@@ -71,14 +72,21 @@ export default function IncomePage() {
     )
   })
 
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-4 p-8 pt-6 flex flex-col">
       {isStatsPending || isChartDataPending || isUserSalesPending ? (
         <div className="flex items-center justify-center w-full h-full">
           <p className="text-lg font-semibold">Loading...</p>
         </div>
       ) : (
         <>
+          <DatePicker
+            className="place-self-end"
+            date={selectedDate}
+            setDate={setSelectedDate}
+          />
           <IncomeStats stats={incomeStats!} />
           <IncomeChart data={incomeChartData!} />
           <div>
