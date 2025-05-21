@@ -16,13 +16,13 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
-  const { data: userData } = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getUser()
-      return data
-    },
-  })
+  // const { data: userData } = useQuery({
+  //   queryKey: ['user'],
+  //   queryFn: async () => {
+  //     const { data } = await supabase.auth.getUser()
+  //     return data
+  //   },
+  // })
 
   const pathname = usePathname()
   console.log(pathname === items[0].href)
@@ -34,11 +34,11 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       )}
       {...props}>
       {items.map(item => {
-        const userRole = userData?.user?.user_metadata.role
+        // const userRole = userData?.user?.user_metadata.role
 
-        if (item.title === 'Account' && userRole === 'owner') {
-          return null
-        }
+        // if (item.title === 'Account' && userRole === 'owner') {
+        //   return null
+        // }
 
         return (
           <Link
