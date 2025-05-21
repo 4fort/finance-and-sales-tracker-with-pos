@@ -2,8 +2,10 @@ import { supabase } from '@/lib/supabase'
 import { AddSalePayload } from '@/types/Income'
 
 export const incomeActions = {
-  getStats: async () => {
-    const { data, error } = await supabase.rpc('get_income_stats')
+  getStats: async (range: string) => {
+    const { data, error } = await supabase.rpc('get_income_stats', {
+      view_range: range,
+    })
     if (error) {
       console.error('Error fetching income stats:', error)
       return null

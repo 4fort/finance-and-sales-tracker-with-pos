@@ -17,16 +17,31 @@ import {
 import { itemsColumns } from './items-columns'
 import { DatePicker } from '@/components/date-picker'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  StatsThisMonth,
+  StatsThisWeek,
+  StatsThisYear,
+  StatsToday,
+} from './components/stat-tab-contents'
+import { Tab } from '@headlessui/react'
+
+const VIEWS = [
+  { label: 'Today', value: 'today' },
+  { label: 'This Week', value: 'week' },
+  { label: 'This Month', value: 'month' },
+  { label: 'This Year', value: 'year' },
+]
 
 export default function IncomePage() {
-  const { data: incomeStats, isPending: isStatsPending } =
-    useQuery<IncomeStatsType>({
-      queryKey: ['income_stats'],
-      queryFn: async () => {
-        const data = await incomeActions.getStats()
-        return data
-      },
-    })
+  // const { data: incomeStats, isPending: isStatsPending } =
+  //   useQuery<IncomeStatsType>({
+  //     queryKey: ['income_stats'],
+  //     queryFn: async () => {
+  //       const data = await incomeActions.getStats('today')
+  //       return data
+  //     },
+  //   })
 
   const { data: incomeChartData, isPending: isChartDataPending } = useQuery<
     IncomeChartDataType[]
@@ -76,25 +91,49 @@ export default function IncomePage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6 flex flex-col">
-      {isStatsPending || isChartDataPending || isUserSalesPending ? (
+    <Tabs defaultValue="today" className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between">
+        <TabsList>
+          {VIEWS.map(view => (
+            <TabsTrigger
+              key={view.value}
+              value={view.value}
+              className="capitalize">
+              {view.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {/* <div className="flex items-center gap-2">
+              {selectedDate && (
+                <Button onClick={() => setSelectedDate(undefined)}>
+                  Clear
+                </Button>
+              )}
+              <DatePicker
+                date={selectedDate}
+                setDate={setSelectedDate}
+                placeholder="Show specific date"
+              />
+            </div> */}
+      </div>
+      {isChartDataPending || isUserSalesPending ? (
         <div className="flex items-center justify-center w-full h-full">
           <p className="text-lg font-semibold">Loading...</p>
         </div>
       ) : (
         <>
-          <div className="place-self-end flex items-center gap-2">
-            {selectedDate && (
-              <Button onClick={() => setSelectedDate(undefined)}>Clear</Button>
-            )}
-            <DatePicker
-              date={selectedDate}
-              setDate={setSelectedDate}
-              placeholder="Show specific date"
-            />
-          </div>
-          <IncomeStats stats={incomeStats!} />
-          <IncomeChart data={incomeChartData!} />
+          <TabsContent value="today" className="flex flex-col gap-2">
+            <StatsToday />
+          </TabsContent>
+          <TabsContent value="week" className="flex flex-col gap-2">
+            <StatsThisWeek />
+          </TabsContent>
+          <TabsContent value="month" className="flex flex-col gap-2">
+            <StatsThisMonth />
+          </TabsContent>
+          <TabsContent value="year" className="flex flex-col gap-2">
+            <StatsThisYear />
+          </TabsContent>
           <div>
             <IncomeToolbar />
             {viewSelection?.value === 'items' ? (
@@ -105,6 +144,6 @@ export default function IncomePage() {
           </div>
         </>
       )}
-    </div>
+    </Tabs>
   )
 }
