@@ -105,7 +105,7 @@ export function LoginPage() {
             className={styles['form-brand']}
             onClick={() => router.push('/')}>
             <ShoppingCart className="h-10 w-10 mr-2 " />
-            <h1>COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM</h1>
+            <h1>COTEJAR STORE BINDOY: TRACKING SYSTEM</h1>
           </div>
           <div className={styles['form-header']}>
             <h1 className={styles['form-title']}>Welcome back!</h1>

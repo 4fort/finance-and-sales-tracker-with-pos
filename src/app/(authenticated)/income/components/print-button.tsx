@@ -25,9 +25,7 @@ export function PrintButton({
         if (businessProfileState?.selectedProfile) {
           const profile = businessProfileState.selectedProfile
           return {
-            name:
-              profile.shop_name ||
-              'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM',
+            name: profile.shop_name || 'COTEJAR STORE BINDOY: TRACKING SYSTEM',
             info: [
               profile.street,
               profile.city,
@@ -47,7 +45,7 @@ export function PrintButton({
             name:
               profile.name ||
               profile.shop_name ||
-              'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM',
+              'COTEJAR STORE BINDOY: TRACKING SYSTEM',
             info: [
               profile.address ||
                 [profile.street, profile.city, profile.state, profile.zip_code]
@@ -70,8 +68,7 @@ export function PrintButton({
 
       if (shopNameElement) {
         const name =
-          shopNameElement.textContent ||
-          'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM'
+          shopNameElement.textContent || 'COTEJAR STORE BINDOY: TRACKING SYSTEM'
         const address = shopAddressElement?.textContent || ''
 
         return {
@@ -85,7 +82,7 @@ export function PrintButton({
 
     // Default values
     return {
-      name: 'COTEJAR STORE BINDOY SALES AND TRACKER SYSTEM',
+      name: 'COTEJAR STORE BINDOY: TRACKING SYSTEM',
       info: '',
     }
   }
