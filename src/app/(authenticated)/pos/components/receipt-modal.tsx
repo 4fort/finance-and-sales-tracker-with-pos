@@ -56,7 +56,7 @@ export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px] print:fixed print:inset-0 print:z-[9999] print:p-6 print:m-0 print:w-full print:h-auto print:max-w-none print:translate-x-0 print:translate-y-0 print:overflow-visible print:bg-white print:shadow-none print:border-none">
+      <DialogContent className="sm:max-w-[400px] print:h-full print:w-full print:max-w-full print:overflow-visible print:bg-white print:shadow-none print:border-none">
         <DialogHeader className="print:hidden">
           <DialogTitle className="text-center">Receipt</DialogTitle>
         </DialogHeader>

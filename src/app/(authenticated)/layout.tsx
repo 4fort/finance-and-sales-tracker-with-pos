@@ -27,7 +27,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Toaster />
       {/* Page Content */}
-      <main className="grow h-auto flex flex-col">
+      <main className="grow h-screen max-h-screen flex flex-col">
         <div className="border-b bg-white">
           <div className="flex h-16 items-center px-4">
             <BusinessProfileSwitcher />

@@ -26,7 +26,7 @@ export function OrderSummary({
   const isEmpty = items.length === 0
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col shrink h-[calc(100vh-145px)]">
       <div className="p-4 border-b">
         <h2 className="text-xl font-bold">Current Order</h2>
         <p className="text-muted-foreground text-sm">
@@ -45,7 +45,7 @@ export function OrderSummary({
         </div>
       ) : (
         <>
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="h-full flex-1 p-4">
             <div className="space-y-4">
               {items.map(item => (
                 <div

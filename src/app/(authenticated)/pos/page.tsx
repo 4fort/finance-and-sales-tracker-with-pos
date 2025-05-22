@@ -266,7 +266,7 @@ export default function POSPage() {
         </div>
 
         {/* Right side - Order summary */}
-        <div className="flex flex-col w-full md:w-1/3 bg-muted/30">
+        <div className="shrink flex flex-col w-full md:w-1/3 bg-muted/30">
           <OrderSummary
             items={orderItems}
             onUpdateQuantity={updateProductQuantity}
