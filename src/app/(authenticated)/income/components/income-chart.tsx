@@ -84,7 +84,7 @@ export function IncomeChart({
               bottom: 5,
             }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="name" className="text-xs" />
+            <XAxis dataKey="label" className="text-xs" />
             <YAxis className="text-xs" tickFormatter={value => `$${value}`} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
