@@ -1,6 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const PATH_PRIVELEGES = {
+  '/pos': ['cashier', 'admin', 'owner', 'manager'],
+  '/settings': ['cashier', 'admin', 'owner', 'manager'],
+  '/dashboard': ['admin', 'owner', 'manager'],
+  '/products': ['admin', 'owner', 'manager'],
+  '/orders': ['admin', 'owner', 'manager'],
+  '/customers': ['admin', 'owner', 'manager'],
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -47,6 +56,24 @@ export async function updateSession(request: NextRequest) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  const userRole = user?.user_metadata?.role
+
+  console.log('USER ROLE', userRole)
+
+  const isPathPrivileged = Object.keys(PATH_PRIVELEGES).some(path => {
+    return request.nextUrl.pathname.startsWith(path)
+  })
+  const isUserPrivileged =
+    PATH_PRIVELEGES[
+      request.nextUrl.pathname as keyof typeof PATH_PRIVELEGES
+    ]?.includes(userRole)
+  if (isPathPrivileged && !isUserPrivileged) {
+    // user is not allowed to access this path
+    const url = request.nextUrl.clone()
+    url.pathname = '/pos'
     return NextResponse.redirect(url)
   }
 
