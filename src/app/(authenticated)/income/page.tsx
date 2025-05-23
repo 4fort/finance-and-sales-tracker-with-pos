@@ -15,26 +15,46 @@ import {
   type IncomeStatsType as IncomeStatsType,
 } from '@/types/Income'
 import { itemsColumns } from './items-columns'
+import { DatePicker } from '@/components/date-picker'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  StatsThisMonth,
+  StatsThisWeek,
+  StatsThisYear,
+  StatsToday,
+} from './components/stat-tab-contents'
+import { Tab } from '@headlessui/react'
+
+// Import print styles
+import './print-styles.css'
+
+const VIEWS = [
+  { label: 'Today', value: 'today' },
+  { label: 'This Week', value: 'week' },
+  { label: 'This Month', value: 'month' },
+  { label: 'This Year', value: 'year' },
+]
 
 export default function IncomePage() {
-  const { data: incomeStats, isPending: isStatsPending } =
-    useQuery<IncomeStatsType>({
-      queryKey: ['income_stats'],
-      queryFn: async () => {
-        const data = await incomeActions.getStats()
-        return data
-      },
-    })
+  // const { data: incomeStats, isPending: isStatsPending } =
+  //   useQuery<IncomeStatsType>({
+  //     queryKey: ['income_stats'],
+  //     queryFn: async () => {
+  //       const data = await incomeActions.getStats('today')
+  //       return data
+  //     },
+  //   })
 
-  const { data: incomeChartData, isPending: isChartDataPending } = useQuery<
-    IncomeChartDataType[]
-  >({
-    queryKey: ['income_chart'],
-    queryFn: async () => {
-      const data = await incomeActions.getChartData()
-      return data
-    },
-  })
+  // const { data: incomeChartData, isPending: isChartDataPending } = useQuery<
+  //   IncomeChartDataType[]
+  // >({
+  //   queryKey: ['income_chart'],
+  //   queryFn: async () => {
+  //     const data = await incomeActions.getChartData()
+  //     return data
+  //   },
+  // })
 
   const { data: userSales, isPending: isUserSalesPending } = useQuery<
     IncomeSalesRowType[]
@@ -71,17 +91,41 @@ export default function IncomePage() {
     )
   })
 
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      {isStatsPending || isChartDataPending || isUserSalesPending ? (
+    <Tabs defaultValue="today" className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between no-print">
+        <TabsList>
+          {VIEWS.map(view => (
+            <TabsTrigger
+              key={view.value}
+              value={view.value}
+              className="capitalize">
+              {view.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+      {isUserSalesPending ? (
         <div className="flex items-center justify-center w-full h-full">
           <p className="text-lg font-semibold">Loading...</p>
         </div>
       ) : (
         <>
-          <IncomeStats stats={incomeStats!} />
-          <IncomeChart data={incomeChartData!} />
-          <div>
+          <TabsContent value="today">
+            <StatsToday />
+          </TabsContent>
+          <TabsContent value="week">
+            <StatsThisWeek />
+          </TabsContent>
+          <TabsContent value="month">
+            <StatsThisMonth />
+          </TabsContent>
+          <TabsContent value="year">
+            <StatsThisYear />
+          </TabsContent>
+          <div className="no-print">
             <IncomeToolbar />
             {viewSelection?.value === 'items' ? (
               <DataTable columns={itemsColumns} data={itemSales!} />
@@ -91,6 +135,6 @@ export default function IncomePage() {
           </div>
         </>
       )}
-    </div>
+    </Tabs>
   )
 }

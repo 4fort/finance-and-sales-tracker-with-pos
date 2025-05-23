@@ -56,8 +56,8 @@ export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[400px] print:h-full print:w-full print:max-w-full print:overflow-visible print:bg-white print:shadow-none print:border-none">
+        <DialogHeader className="print:hidden">
           <DialogTitle className="text-center">Receipt</DialogTitle>
         </DialogHeader>
 
@@ -88,7 +88,7 @@ export function ReceiptModal({ isOpen, onClose, order }: ReceiptModalProps) {
 
           <Separator className="my-2" />
 
-          <ScrollArea className="h-[200px] my-4">
+          <ScrollArea className="h-[200px] my-4 print:h-auto print:max-h-none print:overflow-visible">
             <div className="space-y-2">
               {order.items.map(item => (
                 <div

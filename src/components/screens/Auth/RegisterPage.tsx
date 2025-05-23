@@ -102,7 +102,7 @@ export function RegisterPage() {
             className={styles['form-brand']}
             onClick={() => router.push('/')}>
             <ShoppingCart className={styles['cart-icon']} />
-            <h1>FASTracking System</h1>
+            <h1>COTEJAR STORE BINDOY: TRACKING SYSTEM</h1>
           </div>
           <div className={styles['form-header']}>
             <h1 className={styles['form-title']}>Join Now!</h1>

@@ -26,7 +26,7 @@ export function OrderSummary({
   const isEmpty = items.length === 0
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col shrink h-[calc(100vh-145px)]">
       <div className="p-4 border-b">
         <h2 className="text-xl font-bold">Current Order</h2>
         <p className="text-muted-foreground text-sm">
@@ -45,7 +45,7 @@ export function OrderSummary({
         </div>
       ) : (
         <>
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="h-full flex-1 p-4">
             <div className="space-y-4">
               {items.map(item => (
                 <div
@@ -68,25 +68,64 @@ export function OrderSummary({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-none"
-                        onClick={() =>
+                        onClick={() => {
+                          if (item.quantity <= 0) {
+                            return
+                          }
                           onUpdateQuantity(
                             item.product.product_id,
                             item.quantity - 1,
                           )
-                        }>
+                        }}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="w-8 text-center">{item.quantity}</span>
+                      {/* <span className="w-8 text-center">{item.quantity}</span> */}
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={e => {
+                          if (e.target.value === '') {
+                            return
+                          }
+                          if (
+                            parseInt(e.target.value) >
+                            item.product.quantity_in_stock
+                          ) {
+                            e.target.value = String(
+                              item.product.quantity_in_stock,
+                            )
+                          }
+
+                          onUpdateQuantity(
+                            item.product.product_id,
+                            Number(e.target.value),
+                          )
+                        }}
+                        onBlur={e => {
+                          if (e.target.value === '') {
+                            onUpdateQuantity(item.product.product_id, 0)
+                          }
+                        }}
+                        onFocus={e => {
+                          e.target.select()
+                        }}
+                        className="text-center border-none focus:ring-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        min={1}
+                        max={item.product.quantity_in_stock}
+                      />
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 rounded-none"
-                        onClick={() =>
+                        onClick={() => {
+                          if (item.quantity >= item.product.quantity_in_stock) {
+                            return
+                          }
                           onUpdateQuantity(
                             item.product.product_id,
                             item.quantity + 1,
                           )
-                        }>
+                        }}>
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>

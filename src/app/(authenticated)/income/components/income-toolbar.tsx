@@ -19,7 +19,7 @@ export default function IncomeToolbar() {
     return tab === currentTab ? 'outline' : 'ghost'
   }
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-tl-md rounded-tr-md border-border border-l border-t border-r">
+    <div className="flex items-center justify-between p-4 bg-white rounded-tl-md rounded-tr-md border-border border-l border-t border-r no-print">
       <div className="bg-muted p-0.5 rounded-md space-x-1">
         <Button
           variant={isActive('all')}

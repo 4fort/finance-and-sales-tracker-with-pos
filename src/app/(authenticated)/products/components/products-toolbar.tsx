@@ -32,7 +32,7 @@ export default function ProductsToolbar() {
           onClick={() => setTab('archived')}
           size="sm"
           className="border-none hover:bg-background">
-          Archived
+          Deleted
         </Button>
       </div>
       <div className="flex items-center gap-2">

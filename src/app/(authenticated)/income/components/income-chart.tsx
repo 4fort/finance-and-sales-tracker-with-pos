@@ -65,12 +65,15 @@ export function IncomeChart({
   className,
 }: IncomeChartProps) {
   return (
-    <Card className={cn('col-span-4', className)}>
+    <Card
+      className={cn('col-span-4 print:border-0 print:shadow-none', className)}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="print:text-lg">{title}</CardTitle>
+        <CardDescription className="print:text-sm">
+          {description}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="pl-2 chart-container">
         <ResponsiveContainer width="100%" height={350}>
           <LineChart
             data={data}
@@ -81,7 +84,7 @@ export function IncomeChart({
               bottom: 5,
             }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="name" className="text-xs" />
+            <XAxis dataKey="label" className="text-xs" />
             <YAxis className="text-xs" tickFormatter={value => `$${value}`} />
             <Tooltip content={<CustomTooltip />} />
             <Legend />

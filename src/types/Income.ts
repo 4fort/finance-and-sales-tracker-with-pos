@@ -13,7 +13,7 @@ export interface IncomeStatsType {
 }
 
 export interface IncomeChartDataType {
-  name: string
+  label: string
   sales: number
   profit: number
 }

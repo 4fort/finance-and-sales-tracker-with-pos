@@ -2,8 +2,10 @@ import { supabase } from '@/lib/supabase'
 import { AddSalePayload } from '@/types/Income'
 
 export const incomeActions = {
-  getStats: async () => {
-    const { data, error } = await supabase.rpc('get_income_stats')
+  getStats: async (range: string) => {
+    const { data, error } = await supabase.rpc('get_income_stats', {
+      view_range: range,
+    })
     if (error) {
       console.error('Error fetching income stats:', error)
       return null
@@ -11,7 +13,7 @@ export const incomeActions = {
 
     return data
   },
-  getChartData: async () => {
+  getChartData: async (range: string) => {
     const { data: userData, error: userError } = await supabase.auth.getUser()
 
     if (userError) {
@@ -24,7 +26,9 @@ export const incomeActions = {
       return null
     }
 
-    const { data, error } = await supabase.rpc('get_monthly_chart_data')
+    const { data, error } = await supabase.rpc('get_chart_data', {
+      view_range: range,
+    })
     if (error) {
       console.error('Error fetching income chart data:', error)
       return null

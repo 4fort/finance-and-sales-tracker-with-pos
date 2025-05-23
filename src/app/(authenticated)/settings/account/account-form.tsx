@@ -38,6 +38,7 @@ import { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 import { Textarea } from '@/components/ui/textarea'
+import { User } from '@supabase/supabase-js'
 
 const roles = [
   { label: 'Admin', value: 'admin' },
@@ -82,6 +83,7 @@ export function AccountForm() {
     // Don't validate or submit until data is loaded
     mode: 'onSubmit',
   })
+  const [user, setUser] = useState<User | null>(null)
 
   const getUser = async () => {
     try {
@@ -102,6 +104,7 @@ export function AccountForm() {
           role: user.user_metadata.role || '',
           bio: user.user_metadata.personal_details?.bio || '',
         })
+        setUser(user)
       }
     } catch (error) {
       console.error(error)
@@ -228,10 +231,13 @@ export function AccountForm() {
                       className={cn(
                         'w-[200px] justify-between',
                         !field.value && 'text-muted-foreground',
-                      )}>
+                      )}
+                      disabled={
+                        user?.user_metadata.role === 'cashier' ||
+                        user?.user_metadata.role === 'manager'
+                      }>
                       {field.value
-                        ? roles.find(language => language.value === field.value)
-                            ?.label
+                        ? roles.find(role => role.value === field.value)?.label
                         : 'Select role'}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
@@ -243,22 +249,22 @@ export function AccountForm() {
                     <CommandList>
                       <CommandEmpty>No role found.</CommandEmpty>
                       <CommandGroup>
-                        {roles.map(language => (
+                        {roles.map(role => (
                           <CommandItem
-                            value={language.label}
-                            key={language.value}
+                            value={role.label}
+                            key={role.value}
                             onSelect={() => {
-                              form.setValue('role', language.value)
+                              form.setValue('role', role.value)
                             }}>
                             <Check
                               className={cn(
                                 'mr-2',
-                                language.value === field.value
+                                role.value === field.value
                                   ? 'opacity-100'
                                   : 'opacity-0',
                               )}
                             />
-                            {language.label}
+                            {role.label}
                           </CommandItem>
                         ))}
                       </CommandGroup>

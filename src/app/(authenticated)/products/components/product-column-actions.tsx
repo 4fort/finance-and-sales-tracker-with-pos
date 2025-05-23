@@ -53,7 +53,7 @@ export default function ProductColumnActions({
                 setSelectedProduct(product)
               }}
               className="text-destructive-foreground bg-destructive">
-              Archive Product
+              Delete Product
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem

@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 import axios, { AxiosError } from 'axios'
@@ -106,7 +105,7 @@ export function LoginPage() {
             className={styles['form-brand']}
             onClick={() => router.push('/')}>
             <ShoppingCart className="h-10 w-10 mr-2 " />
-            <h1>FASTracking System</h1>
+            <h1>COTEJAR STORE BINDOY: TRACKING SYSTEM</h1>
           </div>
           <div className={styles['form-header']}>
             <h1 className={styles['form-title']}>Welcome back!</h1>
@@ -164,12 +163,12 @@ export function LoginPage() {
               </form>
             </Form>
           </div>
-          <div className={styles['form-footer']}>
+          {/* <div className={styles['form-footer']}>
             Don&apos;t have an account?{' '}
             <Link href="/register" className={styles['form-footer-link']}>
               Sign up
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className={styles['right-column']}>

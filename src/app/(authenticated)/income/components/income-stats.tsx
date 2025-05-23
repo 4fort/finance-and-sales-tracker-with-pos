@@ -15,16 +15,17 @@ interface IncomeStatsProps {
 }
 
 export default function IncomeStats({ stats }: IncomeStatsProps) {
-  console.log(stats)
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 card-grid">
+      <Card className="print:border print:shadow-none">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <DollarSign className="h-4 w-4 text-muted-foreground print:text-black" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Total Sales">
             {stats.totalSales.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -60,7 +61,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Total Profit">
             {stats.totalProfit.value.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -96,7 +99,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <Percent className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Profit Margin">
             {stats.profitMargin.value.toFixed(2)}%
           </div>
           <p className="text-xs text-muted-foreground">
@@ -127,7 +132,9 @@ export default function IncomeStats({ stats }: IncomeStatsProps) {
           <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div
+            className="text-2xl font-bold stat-value"
+            data-label="Stocks Sold">
             {stats.stocksSold.value.toLocaleString()}
           </div>
           <p className="text-xs text-muted-foreground">

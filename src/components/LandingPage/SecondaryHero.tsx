@@ -27,8 +27,8 @@ export function SecondaryHero() {
               Ready to Transform Your E-commerce Business?
             </h2>
             <p className="mx-auto max-w-[700px] text-white md:text-xl dark:text-gray-400">
-              Join thousands of successful online stores using FASTracking
-              System.
+              Join thousands of successful online stores using COTEJAR STORE
+              BINDOY SALES AND TRACKER SYSTEM.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">

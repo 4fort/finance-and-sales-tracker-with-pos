@@ -42,8 +42,8 @@ import {
   useBusinessProfileContext,
 } from '@/app/business-profile-context'
 import { Info, Plus } from 'lucide-react'
-import { BusinessProfileSwitcher } from '@/components/Dashboard/business-profile-switcher'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import ManageBusinessProfile from './components/manage-business-profile'
 
 const profileFormSchema = z.object({
   email: z
@@ -82,17 +82,19 @@ export function ProfileForm() {
     },
   })
 
+  const userBusinessProfile =
+    userData?.user.user_metadata?.profile.business_profile
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       email: '',
-      business_profile: undefined,
+      business_profile: userBusinessProfile ?? undefined,
       manager_name: '',
     },
     values: {
       email: userData?.user.email ?? '',
-      business_profile:
-        userData?.user.user_metadata?.profile?.business_profile ?? undefined,
+      business_profile: selectedProfile?.id ?? userBusinessProfile ?? undefined,
       manager_name: selectedProfile?.manager_name ?? '',
     },
   })
@@ -157,6 +159,8 @@ export function ProfileForm() {
     }
   }
 
+  console.log('Form values:', form.getValues(), userBusinessProfile)
+
   return (
     <>
       <Form {...form}>
@@ -198,13 +202,15 @@ export function ProfileForm() {
                           ))}
                       </SelectContent>
                     </Select>
-                    <Button
+                    {/* <Button
                       variant="outline"
                       type="button"
                       onClick={() => setIsCreateBusinessProfileFormOpen(true)}>
                       <Plus className="h-4 w-4 mr-2" /> Create custom business
                       profile
-                    </Button>
+                    </Button> */}
+
+                    <ManageBusinessProfile />
                   </div>
                   <FormDescription>
                     This is the business profile that will be used for your
@@ -215,10 +221,22 @@ export function ProfileForm() {
                 </FormItem>
               )}
             />
-            {(!selectedProfile || selectedProfile.id) === 2 ? (
-              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md">
-                <Info className="w-6 self-start" />
-                <p>
+
+            {userData?.user.user_metadata?.profile?.business_profile !==
+              form.watch('business_profile') && (
+              <div className="flex items-center space-x-2 text-blue-700 bg-blue-100 border border-blue-400 p-2 rounded-md mt-2">
+                <Info className="h-5 w-5 self-start flex-shrink-0" />
+                <p className="text-sm">
+                  Your active business profile selection has changed. Click
+                  &apos;Save&apos; to make this your default.
+                </p>
+              </div>
+            )}
+
+            {!selectedProfile || selectedProfile.id === 2 ? (
+              <div className="flex items-center space-x-2 text-amber-700 bg-amber-100 border border-amber-400 p-2 rounded-md mt-2">
+                <Info className="h-5 w-5 self-start flex-shrink-0" />
+                <p className="text-sm">
                   You are currently using the default business profile. It is
                   advised to create or use a custom business profile to manage
                   your business information effectively.
@@ -285,7 +303,15 @@ export function ProfileForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Update business profile</Button>
+          <Button
+            type="submit"
+            className={cn(
+              userData?.user.user_metadata?.profile?.business_profile !==
+                form.watch('business_profile') &&
+                'ring ring-ring ring-offset-2',
+            )}>
+            Save
+          </Button>
         </form>
       </Form>
       {/* <Button
@@ -364,20 +390,25 @@ const businessProfileFormSchema = z.object({
     message: 'Please enter a zip code.',
   }),
   manager_name: z.string().optional(),
+  id: z.number().optional(), // Added id for editing
 })
 
-function BusinessProfileForm({
+export function BusinessProfileForm({
   userId,
   setIsOpen,
+  initialData, // Added initialData
+  mode = 'create', // Added mode, defaults to 'create'
 }: {
   userId?: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  initialData?: BusinessProfileFormValues // Added initialData type
+  mode?: 'create' | 'edit' // Added mode type
 }) {
   const queryClient = useQueryClient()
 
   const form = useForm<BusinessProfileFormValues>({
     resolver: zodResolver(businessProfileFormSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       shop_name: '',
       city: '',
       state: '',
@@ -387,32 +418,62 @@ function BusinessProfileForm({
     },
   })
 
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData)
+    }
+  }, [initialData, form])
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (values: BusinessProfileFormValues) => {
       const payload = {
         ...values,
-        owner_id: userId,
+        owner_id: userId, // owner_id is still needed for creation, might not be for update depending on policy
       }
-      const { data, error } = await supabase
-        .from('business_profiles')
-        .insert([payload])
-        .select()
-      if (error) {
-        throw error
+      if (mode === 'edit' && values.id) {
+        const { data, error } = await supabase
+          .from('business_profiles')
+          .update(payload)
+          .eq('id', values.id)
+          .select()
+        if (error) {
+          throw error
+        }
+        return data
+      } else {
+        const { data, error } = await supabase
+          .from('business_profiles')
+          .insert([payload])
+          .select()
+        if (error) {
+          throw error
+        }
+        return data
       }
-      return data
     },
-    onSuccess: () => {
+    onSuccess: data => {
       toast({
-        title: 'Business profile created successfully.',
-        description: 'You can now use this profile for your transactions.',
+        title: `Business profile ${
+          mode === 'edit' ? 'updated' : 'created'
+        } successfully.`,
+        description: `You can now use this profile for your transactions.`,
       })
       queryClient.invalidateQueries({ queryKey: ['businessProfiles'] })
+      // Potentially update selected profile if the edited one was selected
+      if (mode === 'edit' && data && data[0]) {
+        const updatedProfile = data[0] as BusinessProfile
+        // If you have access to setSelectedProfile and selectedProfile here, you could update it:
+        // if (selectedProfile?.id === updatedProfile.id) {
+        //   setSelectedProfile(updatedProfile);
+        // }
+      }
       setIsOpen(false)
     },
     onError: error => {
       toast({
-        title: 'Error creating business profile',
+        title: `Error ${
+          mode === 'edit' ? 'updating' : 'creating'
+        } business profile`,
         description: error.message,
         variant: 'destructive',
       })
@@ -420,22 +481,34 @@ function BusinessProfileForm({
   })
 
   const onSubmit = async (values: BusinessProfileFormValues) => {
-    const payload = {
-      ...values,
-      owner_id: userId,
-    }
+    const payload: Partial<BusinessProfileFormValues & { owner_id?: string }> =
+      {
+        ...values,
+      }
 
-    if (!userId) {
+    if (mode === 'create') {
+      payload.owner_id = userId
+      if (!userId) {
+        toast({
+          title:
+            'User ID is missing. Please try again later or reload the page.',
+          variant: 'destructive',
+        })
+        return
+      }
+    } else if (mode === 'edit' && !values.id) {
       toast({
-        title: 'Please try again later or reload the page.',
+        title: 'Profile ID is missing for update. Please try again.',
         variant: 'destructive',
       })
       return
     }
 
     try {
-      await mutateAsync(payload)
-      form.reset()
+      await mutateAsync(payload as BusinessProfileFormValues) // Cast because owner_id is optional in schema but needed for insert
+      if (mode === 'create') {
+        form.reset()
+      }
     } catch (error) {
       console.error(error)
     }
@@ -536,7 +609,7 @@ function BusinessProfileForm({
         </div>
 
         <Button type="submit" disabled={isPending}>
-          Create Business Profile
+          {mode === 'edit' ? 'Update' : 'Create'} Business Profile
         </Button>
       </form>
     </Form>
